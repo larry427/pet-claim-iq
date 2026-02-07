@@ -70,11 +70,11 @@
 
   /* === UPLOAD SECTION === */
   .upload-section {
-    background: white; border-radius: 16px; box-shadow: var(--shadow-lg);
-    border: 1px solid var(--g200); overflow: hidden; margin-bottom: 20px;
+    background: white; border-radius: 20px; box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 20px;
   }
   .upload-section::before {
-    content: ''; display: block; height: 3px;
+    content: ''; display: block; height: 4px;
     background: linear-gradient(90deg, var(--green), var(--green-light), var(--orange));
   }
   .upload-inner { padding: 24px; }
@@ -93,11 +93,11 @@
   .upload-hint { font-size: 12px; color: var(--g400); margin-bottom: 8px; line-height: 1.4; }
 
   .drop-zone {
-    border: 2px dashed var(--g300); border-radius: 10px; padding: 20px;
-    text-align: center; cursor: pointer; transition: all 0.2s;
+    border: 2px dashed var(--g300); border-radius: 14px; padding: 28px 20px;
+    text-align: center; cursor: pointer; transition: all 0.25s ease;
     background: var(--g50); position: relative;
   }
-  .drop-zone:hover, .drop-zone.dragover { border-color: var(--green); background: var(--green-bg); }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--green); background: var(--green-bg); transform: scale(1.01); }
   .drop-zone.has-file { border-color: var(--green); border-style: solid; background: var(--green-bg); }
   .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .drop-icon { font-size: 28px; margin-bottom: 4px; }
@@ -144,14 +144,16 @@
   .helper-box p { font-size: 13px; color: var(--g600); line-height: 1.5; }
 
   .analyze-btn {
-    display: block; width: 100%; padding: 16px;
+    display: block; width: 100%; padding: 18px;
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white; border: none; border-radius: 12px;
-    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; letter-spacing: 0.01em; margin-top: 20px;
+    color: white; border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 700;
+    cursor: pointer; transition: all 0.25s ease; letter-spacing: 0.01em; margin-top: 24px;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
   }
-  .analyze-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35); }
-  .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22, 163, 74, 0.4); }
+  .analyze-btn:active:not(:disabled) { transform: translateY(0); }
+  .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
   /* Loading */
   .loading-overlay { display: none; text-align: center; padding: 60px 20px; }
@@ -182,11 +184,11 @@
   @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
   .result-card {
-    background: white; border-radius: 16px; box-shadow: var(--shadow-xl);
-    border: 1px solid var(--g200); overflow: hidden; margin-bottom: 16px; position: relative;
+    background: white; border-radius: 20px; box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 16px; position: relative;
   }
   .result-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
     background: linear-gradient(90deg, var(--green), var(--green-light), var(--orange));
   }
 
@@ -320,18 +322,21 @@
   .start-over-btn:hover { border-color: var(--green); color: var(--green); }
 
   .pch-promo {
-    background: white; border: 2px solid var(--green-border);
-    border-radius: 14px; padding: 24px; text-align: center; margin: 16px 0;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, white 100%);
+    border: 2px solid var(--green-border);
+    border-radius: 20px; padding: 28px; text-align: center; margin: 20px 0;
+    box-shadow: 0 4px 16px rgba(22, 163, 74, 0.08);
   }
-  .pch-promo h4 { font-family: 'Fraunces', serif; font-size: 18px; color: var(--g900); margin-bottom: 8px; }
-  .pch-promo p { font-size: 14px; color: var(--g500); margin-bottom: 16px; line-height: 1.5; }
+  .pch-promo h4 { font-family: 'Fraunces', serif; font-size: 20px; color: var(--g900); margin-bottom: 10px; }
+  .pch-promo p { font-size: 15px; color: var(--g500); margin-bottom: 20px; line-height: 1.6; }
   .pch-promo a {
-    display: inline-block; padding: 12px 28px;
+    display: inline-block; padding: 14px 32px;
     background: linear-gradient(135deg, var(--green), var(--green-dark));
-    color: white; text-decoration: none; border-radius: 10px;
-    font-weight: 700; font-size: 14px; transition: all 0.2s;
+    color: white; text-decoration: none; border-radius: 12px;
+    font-weight: 700; font-size: 15px; transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(22,163,74,0.25);
   }
-  .pch-promo a:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+  .pch-promo a:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.35); }
 
   .privacy {
     text-align: center; padding: 30px 20px 40px; font-size: 12px;
@@ -339,24 +344,120 @@
   }
   .privacy strong { color: var(--g500); }
 
-  @media (max-width: 480px) {
-    .header h1 { font-size: 26px; }
-    .header p { font-size: 15px; }
-    .steps { gap: 4px; }
-    .step { font-size: 12px; }
-    .upload-inner { padding: 18px; }
-    .result-header { padding: 20px 16px 16px; }
-    .result-top-row { flex-direction: column; }
-    .line-items { padding: 16px; }
-    .math-section { padding: 16px; }
-    .deductible-section { padding: 16px; }
-    .rec-section { padding: 16px; }
-    .warnings-box { margin: 0 16px; }
-    .missing-box { margin: 16px; }
-    .bill-only-box { margin: 16px; }
-    .deadline-section { padding: 0 16px 16px; }
-    .deadline-box { flex-direction: column; gap: 8px; text-align: center; }
-    .ded-input-row { flex-direction: column; align-items: flex-start; }
+  /* === MOBILE ENHANCEMENTS === */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .container { padding: 0 16px; }
+
+    /* Header */
+    .header { padding: 32px 16px 8px; }
+    .header h1 { font-size: 28px; line-height: 1.2; }
+    .header p { font-size: 16px; line-height: 1.6; }
+    .logo-row { font-size: 13px; padding: 8px 18px; margin-bottom: 16px; }
+
+    /* Steps */
+    .steps { gap: 4px; margin: 20px auto 24px; }
+    .step { font-size: 13px; }
+    .step-num { width: 28px; height: 28px; font-size: 13px; }
+
+    /* Upload */
+    .upload-section { border-radius: 20px; }
+    .upload-inner { padding: 20px; }
+    .upload-label { font-size: 16px; gap: 10px; margin-bottom: 8px; }
+    .upload-label .req { font-size: 12px; padding: 2px 8px; }
+    .upload-label .opt { font-size: 12px; }
+    .upload-hint { font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
+    .drop-zone { padding: 28px 20px; border-radius: 14px; }
+    .drop-icon { font-size: 36px; margin-bottom: 8px; }
+    .drop-text { font-size: 15px; }
+    .file-name { font-size: 15px; }
+    .helper-box { padding: 16px; margin: 24px 0; border-radius: 14px; }
+    .helper-box .hb-icon { font-size: 20px; }
+    .helper-box p { font-size: 14px; line-height: 1.6; }
+    .analyze-btn { padding: 18px; font-size: 18px; border-radius: 14px; margin-top: 24px; }
+    .file-chip { font-size: 13px; padding: 8px 12px; border-radius: 10px; }
+    .add-more-btn { font-size: 13px; padding: 8px 14px; }
+
+    /* Results */
+    .result-card { border-radius: 20px; }
+    .result-card::before { height: 5px; }
+    .result-header { padding: 24px 20px 20px; }
+    .result-top-row { flex-direction: column; gap: 12px; }
+    .result-pet h3 { font-size: 22px; }
+    .result-pet .pet-sub { font-size: 14px; }
+    .result-insurer { font-size: 14px; padding: 10px 16px; }
+    .result-meta { font-size: 14px; gap: 12px; }
+
+    /* Line items */
+    .line-items { padding: 20px; }
+    .section-title { font-size: 12px; letter-spacing: 0.08em; margin-bottom: 14px; }
+    .li-status { width: 26px; height: 26px; font-size: 14px; }
+    .li-name { font-size: 15px; }
+    .li-reason { font-size: 13px; margin-top: 3px; }
+    .li-amount { font-size: 15px; }
+    .line-item { padding: 12px 0; }
+
+    /* Warnings */
+    .warnings-box { margin: 0 20px; padding: 16px 18px; border-radius: 14px; }
+    .warnings-box p { font-size: 14px; }
+
+    /* Math */
+    .math-section { padding: 20px; }
+    .math-box { padding: 18px; border-radius: 14px; }
+    .math-row { font-size: 15px; padding: 8px 0; }
+    .math-result .math-val { font-size: 18px; }
+    .math-note { font-size: 13px; margin-top: 12px; }
+
+    /* Deductible */
+    .deductible-section { padding: 20px; }
+    .deductible-section > p { font-size: 14px !important; }
+    .ded-input-row { flex-direction: column; align-items: flex-start; gap: 8px; margin: 14px 0; }
+    .ded-input-row label { font-size: 15px; }
+    .ded-input { width: 100%; padding: 14px 16px; font-size: 18px; border-radius: 12px; }
+    .ded-annual { font-size: 14px; }
+    .ded-results { padding: 18px; border-radius: 14px; }
+    .ded-progress-bar { height: 14px; border-radius: 7px; margin: 14px 0 8px; }
+    .ded-progress-fill { border-radius: 7px; }
+    .ded-progress-label { font-size: 13px; }
+
+    /* Missing / Bill only */
+    .missing-box { margin: 20px; padding: 20px; border-radius: 16px; }
+    .missing-box h4 { font-size: 18px; }
+    .missing-box li { font-size: 14px; }
+    .missing-box .hint { font-size: 14px; }
+    .missing-box button { padding: 12px 24px; font-size: 15px; border-radius: 10px; }
+    .bill-only-box { margin: 20px; padding: 20px; border-radius: 16px; }
+    .bill-only-box h4 { font-size: 18px; }
+    .bill-only-box p { font-size: 14px; }
+    .bill-only-box button { padding: 12px 24px; font-size: 15px; border-radius: 10px; }
+
+    /* Recommendation */
+    .rec-section { padding: 20px; }
+    .rec-box { padding: 22px; border-radius: 16px; }
+    .rec-header h4 { font-size: 19px; }
+    .rec-text { font-size: 15px; line-height: 1.7; }
+
+    /* Deadline */
+    .deadline-section { padding: 0 20px 20px; }
+    .deadline-box { flex-direction: column; gap: 8px; text-align: center; padding: 16px 18px; border-radius: 14px; }
+    .deadline-text { font-size: 15px; }
+
+    /* Promo & footer */
+    .pch-promo { border-radius: 18px; padding: 28px 22px; }
+    .pch-promo h4 { font-size: 20px; margin-bottom: 10px; }
+    .pch-promo p { font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+    .pch-promo a { padding: 14px 32px; font-size: 16px; border-radius: 12px; }
+    .start-over-btn { padding: 16px; font-size: 16px; border-radius: 14px; }
+    .privacy { font-size: 13px; padding: 28px 20px 36px; }
+
+    /* Loading & Error */
+    .spinner { width: 56px; height: 56px; }
+    .loading-overlay h3 { font-size: 22px; }
+    .loading-overlay p { font-size: 15px; }
+    .error-box { padding: 24px; border-radius: 16px; }
+    .error-box p { font-size: 15px; }
+    .error-box .err-icon { font-size: 36px; }
+    .error-box button { padding: 12px 24px; font-size: 15px; border-radius: 10px; }
   }
 </style>
 </head>
