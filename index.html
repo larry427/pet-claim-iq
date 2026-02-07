@@ -538,42 +538,16 @@
         </div>
 
         <div class="upload-group">
-          <div class="upload-label">📋 Coverage Details <span class="opt">Recommended</span></div>
-          <div class="upload-hint">Shows your deductible and reimbursement %.</div>
-          <div class="drop-zone" id="dropCoverage">
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="coverageInput" multiple>
+          <div class="upload-label">🛡️ Insurance Documents <span class="opt">Optional but recommended</span></div>
+          <div class="upload-hint">Upload your declarations page, policy summary, terms & conditions — whatever your insurer sent you. We'll figure out what's what.</div>
+          <div class="drop-zone" id="dropInsurance">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="insuranceInput" multiple>
             <div class="drop-default">
               <div class="drop-icon">📎</div>
               <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
             </div>
           </div>
-          <div class="file-chips" id="coverageChips"></div>
-        </div>
-
-        <div class="upload-group">
-          <div class="upload-label">📑 Plan Rules <span class="opt">Recommended</span></div>
-          <div class="upload-hint">Explains what is and isn't covered.</div>
-          <div class="drop-zone" id="dropRules">
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="rulesInput" multiple>
-            <div class="drop-default">
-              <div class="drop-icon">📎</div>
-              <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
-            </div>
-          </div>
-          <div class="file-chips" id="rulesChips"></div>
-        </div>
-
-        <div class="upload-group">
-          <div class="upload-label">📄 Full Policy <span class="opt">Optional</span></div>
-          <div class="upload-hint">Upload if you want the most accurate analysis.</div>
-          <div class="drop-zone" id="dropPolicy">
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="policyInput" multiple>
-            <div class="drop-default">
-              <div class="drop-icon">📎</div>
-              <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
-            </div>
-          </div>
-          <div class="file-chips" id="policyChips"></div>
+          <div class="file-chips" id="insuranceChips"></div>
         </div>
 
         <div class="helper-box">
@@ -716,65 +690,49 @@ function removeVetBill(e) {
   vetBillZone.querySelector('.file-name').style.display = 'none';
 }
 
-// === INSURANCE DOCS (3 categories) ===
-const categories = ['coverage', 'rules', 'policy'];
-const catFiles = { coverage: [], rules: [], policy: [] };
-const catMaxFiles = 5;
+// === INSURANCE DOCS ===
+let insuranceFiles = [];
+const insuranceZone = document.getElementById('dropInsurance');
+const insuranceInput = document.getElementById('insuranceInput');
+const chipsContainer = document.getElementById('insuranceChips');
 
-categories.forEach(cat => {
-  const zone = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
-  const input = document.getElementById(cat + 'Input');
-  const chips = document.getElementById(cat + 'Chips');
-
-  input.addEventListener('change', (e) => addCatFiles(cat, e.target.files));
-  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-  zone.addEventListener('drop', (e) => {
-    e.preventDefault(); zone.classList.remove('dragover');
-    addCatFiles(cat, e.dataTransfer.files);
-  });
+insuranceInput.addEventListener('change', (e) => addInsuranceFiles(e.target.files));
+insuranceZone.addEventListener('dragover', (e) => { e.preventDefault(); insuranceZone.classList.add('dragover'); });
+insuranceZone.addEventListener('dragleave', () => insuranceZone.classList.remove('dragover'));
+insuranceZone.addEventListener('drop', (e) => {
+  e.preventDefault(); insuranceZone.classList.remove('dragover');
+  addInsuranceFiles(e.dataTransfer.files);
 });
 
-function addCatFiles(cat, fileList) {
+function addInsuranceFiles(fileList) {
   for (let i = 0; i < fileList.length; i++) {
-    if (catFiles[cat].length >= catMaxFiles) break;
-    catFiles[cat].push(fileList[i]);
+    if (insuranceFiles.length >= 5) break;
+    insuranceFiles.push(fileList[i]);
   }
-  renderCatChips(cat);
+  renderInsuranceChips();
 }
 
-function removeCatFile(cat, idx) {
-  catFiles[cat].splice(idx, 1);
-  renderCatChips(cat);
+function removeInsuranceFile(idx) {
+  insuranceFiles.splice(idx, 1);
+  renderInsuranceChips();
 }
 
-function renderCatChips(cat) {
-  const zone = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
-  const chips = document.getElementById(cat + 'Chips');
-  const input = document.getElementById(cat + 'Input');
-  if (catFiles[cat].length === 0) {
-    chips.innerHTML = '';
-    zone.classList.remove('has-file');
-    zone.querySelector('.drop-default').style.display = '';
+function renderInsuranceChips() {
+  if (insuranceFiles.length === 0) {
+    chipsContainer.innerHTML = '';
+    insuranceZone.classList.remove('has-file');
+    insuranceZone.querySelector('.drop-default').style.display = '';
     return;
   }
-  zone.classList.add('has-file');
-  zone.querySelector('.drop-default').style.display = 'none';
-  let html = catFiles[cat].map((f, i) =>
-    `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeCatFile('${cat}',${i})">&times;</button></div>`
+  insuranceZone.classList.add('has-file');
+  insuranceZone.querySelector('.drop-default').style.display = 'none';
+  let html = insuranceFiles.map((f, i) =>
+    `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeInsuranceFile(${i})">&times;</button></div>`
   ).join('');
-  if (catFiles[cat].length < catMaxFiles) {
-    html += `<button class="add-more-btn" onclick="document.getElementById('${cat}Input').click()">+ Add more</button>`;
+  if (insuranceFiles.length < 5) {
+    html += `<button class="add-more-btn" onclick="document.getElementById('insuranceInput').click()">+ Add more</button>`;
   }
-  chips.innerHTML = html;
-}
-
-function getAllInsuranceFiles() {
-  return [...catFiles.coverage, ...catFiles.rules, ...catFiles.policy];
-}
-
-function getInsuranceDocCount() {
-  return { coverage: catFiles.coverage.length, rules: catFiles.rules.length, policy: catFiles.policy.length };
+  chipsContainer.innerHTML = html;
 }
 
 function trunc(name) { return name.length > 25 ? name.substring(0, 22) + '...' : name; }
@@ -792,7 +750,7 @@ async function analyzeDocuments() {
 
   const formData = new FormData();
   formData.append('vetBill', vetBillFile);
-  getAllInsuranceFiles().forEach(f => formData.append('insuranceDocs', f));
+  insuranceFiles.forEach(f => formData.append('insuranceDocs', f));
 
   try {
     const controller = new AbortController();
@@ -829,19 +787,14 @@ function showError(msg) {
 }
 
 function resetAll() {
-  vetBillFile = null; lastAnalysis = null;
-  catFiles.coverage = []; catFiles.rules = []; catFiles.policy = [];
-  vetBillInput.value = '';
+  vetBillFile = null; insuranceFiles = []; lastAnalysis = null;
+  vetBillInput.value = ''; insuranceInput.value = '';
   vetBillZone.classList.remove('has-file');
   vetBillZone.querySelector('.drop-default').style.display = '';
   vetBillZone.querySelector('.file-name').style.display = 'none';
-  categories.forEach(cat => {
-    document.getElementById(cat + 'Input').value = '';
-    document.getElementById(cat + 'Chips').innerHTML = '';
-    const z = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
-    z.classList.remove('has-file');
-    z.querySelector('.drop-default').style.display = '';
-  });
+  chipsContainer.innerHTML = '';
+  insuranceZone.classList.remove('has-file');
+  insuranceZone.querySelector('.drop-default').style.display = '';
   document.getElementById('uploadView').style.display = '';
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('errorView').classList.remove('visible');
@@ -879,17 +832,14 @@ function renderResults(data) {
 
   // Confidence badge
   const confEl = document.getElementById('rConfidence');
-  const docCounts = getInsuranceDocCount();
-  const hasCoverage = docCounts.coverage > 0;
-  const hasRules = docCounts.rules > 0;
-  const hasPolicy = docCounts.policy > 0;
+  const hasInsuranceDocs = insuranceFiles.length > 0;
   const hasDeductible = !!policyInfo?.annualDeductible;
   const hasRate = !!policyInfo?.reimbursementRate;
 
   let confLevel, confLabel;
-  if (isFull && (hasCoverage || hasPolicy) && (hasRules || hasPolicy) && hasDeductible && hasRate) {
+  if (isFull && hasInsuranceDocs && hasDeductible && hasRate) {
     confLevel = 'high'; confLabel = 'High';
-  } else if (isFull || isPartial) {
+  } else if ((isFull || isPartial) && hasInsuranceDocs) {
     confLevel = 'medium'; confLabel = 'Medium';
   } else {
     confLevel = 'low'; confLabel = 'Low';
