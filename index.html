@@ -1,636 +1,852 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet Claim IQ - Free Coverage Calculator | Pet Claim Helper</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Claim IQ — Know Before You File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --green-dark: #15803d;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --orange: #f97316;
+    --red: #ef4444;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --yellow: #eab308;
+    --yellow-bg: #fefce8;
+    --yellow-border: #fef08a;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --g50: #f9fafb; --g100: #f3f4f6; --g200: #e5e7eb; --g300: #d1d5db;
+    --g400: #9ca3af; --g500: #6b7280; --g600: #4b5563; --g700: #374151;
+    --g800: #1f2937; --g900: #111827;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: linear-gradient(180deg, #f0fdf4 0%, #fff 30%, #f9fafb 100%);
+    color: var(--g800);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
 
-  <meta name="description" content="Find out if your vet bill will be covered BEFORE you file. Free coverage analysis tool from Pet Claim Helper.">
-  <meta property="og:title" content="Pet Claim IQ - Will Your Vet Bill Be Covered?">
-  <meta property="og:description" content="Upload your vet bill and get instant coverage analysis. Free tool from Pet Claim Helper.">
+  .container { max-width: 680px; margin: 0 auto; padding: 0 20px; }
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  /* === HEADER === */
+  .header { text-align: center; padding: 40px 20px 10px; }
+  .logo-row {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700;
+    color: var(--g900); line-height: 1.25; margin-bottom: 12px;
+  }
+  .header p { font-size: 16px; color: var(--g500); line-height: 1.5; max-width: 520px; margin: 0 auto; }
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'pch-teal': '#1abc9c',
-            'pch-teal-dark': '#16a085',
-            'pch-orange': '#f39c12',
-            'pch-blue': '#3498db',
-          }
-        }
-      }
-    }
-  </script>
+  /* === STEPS === */
+  .steps { display: flex; justify-content: center; gap: 6px; margin: 28px auto 32px; max-width: 400px; }
+  .step { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--g400); font-weight: 500; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--g200);
+    color: var(--g500); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .step.active .step-num { background: var(--green); color: white; }
+  .step.active { color: var(--g700); }
+  .step-arrow { color: var(--g300); font-size: 14px; }
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  /* === UPLOAD SECTION === */
+  .upload-section {
+    background: white; border-radius: 16px; box-shadow: var(--shadow-lg);
+    border: 1px solid var(--g200); overflow: hidden; margin-bottom: 20px;
+  }
+  .upload-section::before {
+    content: ''; display: block; height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--green-light), var(--orange));
+  }
+  .upload-inner { padding: 24px; }
+  .upload-group { margin-bottom: 20px; }
+  .upload-group:last-of-type { margin-bottom: 0; }
+  .upload-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: var(--g800); margin-bottom: 8px;
+  }
+  .upload-label .req {
+    font-size: 11px; font-weight: 600; color: var(--red);
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .upload-label .opt { font-size: 11px; font-weight: 500; color: var(--g400); }
+  .upload-hint { font-size: 12px; color: var(--g400); margin-bottom: 8px; line-height: 1.4; }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f8f9fa;
-    }
+  .drop-zone {
+    border: 2px dashed var(--g300); border-radius: 10px; padding: 20px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    background: var(--g50); position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--green); background: var(--green-bg); }
+  .drop-zone.has-file { border-color: var(--green); border-style: solid; background: var(--green-bg); }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop-icon { font-size: 28px; margin-bottom: 4px; }
+  .drop-text { font-size: 13px; color: var(--g500); }
+  .drop-text strong { color: var(--green); }
+  .file-name {
+    font-size: 13px; font-weight: 600; color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .file-remove {
+    background: none; border: none; color: var(--g400);
+    cursor: pointer; font-size: 16px; padding: 0 4px; line-height: 1;
+  }
+  .file-remove:hover { color: var(--red); }
 
-    .card-hover {
-      transition: all 0.2s ease;
-    }
+  /* Multi-file chips */
+  .file-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
+  .file-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--green-bg); border: 1px solid var(--green-border);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    font-weight: 600; color: var(--green-dark);
+  }
+  .file-chip button {
+    background: none; border: none; color: var(--g400);
+    cursor: pointer; font-size: 14px; padding: 0; line-height: 1;
+  }
+  .file-chip button:hover { color: var(--red); }
+  .add-more-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: 2px dashed var(--g300); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; font-weight: 600;
+    color: var(--g400); cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .add-more-btn:hover { border-color: var(--green); color: var(--green); }
 
-    .card-hover:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(26, 188, 156, 0.15);
-    }
+  .helper-box {
+    background: var(--blue-bg); border: 1px solid var(--blue-border);
+    border-radius: 10px; padding: 14px 16px; margin: 20px 0;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .helper-box .hb-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .helper-box p { font-size: 13px; color: var(--g600); line-height: 1.5; }
 
-    .pch-gradient {
-      background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
-    }
-  </style>
+  .analyze-btn {
+    display: block; width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white; border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.01em; margin-top: 20px;
+  }
+  .analyze-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35); }
+  .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Loading */
+  .loading-overlay { display: none; text-align: center; padding: 60px 20px; }
+  .loading-overlay.visible { display: block; }
+  .spinner {
+    width: 48px; height: 48px; border: 4px solid var(--g200);
+    border-top-color: var(--green); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay h3 { font-family: 'Fraunces', serif; font-size: 20px; color: var(--g800); margin-bottom: 8px; }
+  .loading-overlay p { font-size: 14px; color: var(--g400); }
+
+  /* Error */
+  .error-box { display: none; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 12px; padding: 20px; text-align: center; margin: 20px auto; max-width: 680px; }
+  .error-box.visible { display: block; }
+  .error-box p { font-size: 14px; color: var(--g700); line-height: 1.5; }
+  .error-box .err-icon { font-size: 28px; margin-bottom: 8px; }
+  .error-box button {
+    margin-top: 12px; padding: 10px 20px; background: white;
+    border: 1px solid var(--g300); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--g700);
+  }
+
+  /* === RESULTS === */
+  .results-section { display: none; margin-bottom: 40px; animation: fadeUp 0.5s ease-out; }
+  .results-section.visible { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-card {
+    background: white; border-radius: 16px; box-shadow: var(--shadow-xl);
+    border: 1px solid var(--g200); overflow: hidden; margin-bottom: 16px; position: relative;
+  }
+  .result-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--green), var(--green-light), var(--orange));
+  }
+
+  .result-header { padding: 24px 24px 20px; border-bottom: 1px solid var(--g100); }
+  .result-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+  .result-pet h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--g900); }
+  .result-pet .pet-sub { font-size: 13px; color: var(--g500); margin-top: 2px; }
+  .result-insurer {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--g50); padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--g200); font-size: 13px; font-weight: 600; color: var(--g700);
+  }
+  .result-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--g500); }
+  .result-meta strong { color: var(--g700); }
+
+  .line-items { padding: 20px 24px; border-bottom: 1px solid var(--g100); }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--g400); margin-bottom: 12px; }
+  .line-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--g100); }
+  .line-item:last-child { border-bottom: none; }
+  .li-left { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+  .li-status { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+  .li-status.covered { background: var(--green-bg); color: var(--green); border: 1.5px solid var(--green-border); }
+  .li-status.excluded { background: var(--red-bg); color: var(--red); border: 1.5px solid var(--red-border); }
+  .li-status.uncertain { background: var(--yellow-bg); color: var(--yellow); border: 1.5px solid var(--yellow-border); }
+  .li-status.unknown { background: var(--g100); color: var(--g400); border: 1.5px solid var(--g300); }
+  .li-name { font-size: 14px; font-weight: 500; color: var(--g800); line-height: 1.3; }
+  .li-reason { font-size: 12px; color: var(--g400); margin-top: 2px; }
+  .li-reason.exc { color: var(--red); font-weight: 500; }
+  .li-reason.unc { color: var(--yellow); font-weight: 500; }
+  .li-amount { font-size: 14px; font-weight: 600; color: var(--g700); white-space: nowrap; padding-left: 12px; }
+  .li-amount.struck { color: var(--g400); text-decoration: line-through; }
+
+  .warnings-box { margin: 0 24px; padding: 14px 16px; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 10px; }
+  .warnings-box p { font-size: 13px; color: var(--g700); line-height: 1.5; margin-bottom: 6px; }
+  .warnings-box p:last-child { margin-bottom: 0; }
+  .warnings-box strong { color: var(--red); }
+
+  .math-section { padding: 20px 24px; border-bottom: 1px solid var(--g100); }
+  .math-box { background: var(--g50); border-radius: 10px; padding: 16px; border: 1px solid var(--g200); }
+  .math-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; }
+  .math-label { color: var(--g600); }
+  .math-val { font-weight: 600; color: var(--g800); font-variant-numeric: tabular-nums; }
+  .math-divider { border-top: 1px dashed var(--g300); margin-top: 6px; padding-top: 10px; }
+  .math-result { border-top: 2px solid var(--g300); margin-top: 8px; padding-top: 12px; }
+  .math-result .math-label { font-weight: 600; color: var(--g800); }
+  .math-result .math-val { font-size: 16px; color: var(--green); }
+  .math-note { font-size: 12px; color: var(--g400); font-style: italic; margin-top: 10px; line-height: 1.4; }
+
+  /* Deductible calculator */
+  .deductible-section { padding: 20px 24px; border-bottom: 1px solid var(--g100); }
+  .ded-input-row { display: flex; align-items: center; gap: 12px; margin: 12px 0; flex-wrap: wrap; }
+  .ded-input-row label { font-size: 14px; color: var(--g600); flex-shrink: 0; }
+  .ded-input {
+    width: 140px; padding: 10px 12px; border: 2px solid var(--g300);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px;
+    font-weight: 600; color: var(--g800); transition: border-color 0.2s;
+  }
+  .ded-input:focus { outline: none; border-color: var(--green); }
+  .ded-input::placeholder { color: var(--g300); font-weight: 400; }
+  .ded-annual { font-size: 13px; color: var(--g400); }
+
+  .ded-results { display: none; margin-top: 16px; background: var(--green-bg); border: 1.5px solid var(--green-border); border-radius: 10px; padding: 16px; animation: fadeUp 0.3s ease-out; }
+  .ded-results.visible { display: block; }
+  .ded-results .section-title { color: var(--green-dark); margin-bottom: 10px; }
+
+  .ded-progress-bar { width: 100%; height: 12px; background: var(--g200); border-radius: 6px; overflow: hidden; margin: 12px 0 6px; }
+  .ded-progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light)); border-radius: 6px; transition: width 0.4s ease; }
+  .ded-progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--g500); }
+
+  /* Missing docs */
+  .missing-box {
+    background: var(--yellow-bg); border: 1.5px solid var(--yellow-border);
+    border-radius: 12px; padding: 20px; margin: 20px 24px;
+  }
+  .missing-box h4 { font-family: 'Fraunces', serif; font-size: 16px; color: var(--g800); margin-bottom: 10px; }
+  .missing-box ul { margin: 0 0 12px 18px; }
+  .missing-box li { font-size: 13px; color: var(--g600); line-height: 1.6; }
+  .missing-box .hint { font-size: 13px; color: var(--g500); font-style: italic; margin-bottom: 14px; line-height: 1.5; }
+  .missing-box button {
+    padding: 10px 20px; background: white; border: 2px solid var(--yellow);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; color: var(--g700); transition: all 0.2s;
+  }
+  .missing-box button:hover { background: var(--yellow-bg); border-color: var(--orange); }
+
+  .bill-only-box {
+    background: var(--blue-bg); border: 1.5px solid var(--blue-border);
+    border-radius: 12px; padding: 20px; margin: 20px 24px; text-align: center;
+  }
+  .bill-only-box h4 { font-family: 'Fraunces', serif; font-size: 16px; color: var(--g800); margin-bottom: 10px; }
+  .bill-only-box p { font-size: 13px; color: var(--g500); line-height: 1.6; margin-bottom: 14px; }
+  .bill-only-box button {
+    padding: 10px 20px; background: white; border: 2px solid var(--blue);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; color: var(--g700); transition: all 0.2s;
+  }
+  .bill-only-box button:hover { background: var(--blue-bg); }
+
+  .rec-section { padding: 24px; }
+  .rec-box {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 1.5px solid var(--green-border); border-radius: 12px; padding: 20px;
+  }
+  .rec-box.no-file {
+    background: linear-gradient(135deg, var(--red-bg) 0%, #fff1f2 100%);
+    border-color: var(--red-border);
+  }
+  .rec-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .rec-header h4 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; color: var(--green-dark); }
+  .rec-box.no-file .rec-header h4 { color: var(--red); }
+  .rec-text { font-size: 14px; color: var(--g600); line-height: 1.6; }
+  .rec-text strong { color: var(--g800); }
+
+  .deadline-section { padding: 0 24px 20px; }
+  .deadline-box {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--green-bg); border: 1px solid var(--green-border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .deadline-left { display: flex; align-items: center; gap: 10px; }
+  .deadline-text { font-size: 14px; color: var(--g700); }
+  .deadline-text strong { color: var(--g900); }
+
+  .start-over-btn {
+    display: block; width: 100%; padding: 14px;
+    background: white; color: var(--g600);
+    border: 2px solid var(--g200); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 8px;
+  }
+  .start-over-btn:hover { border-color: var(--green); color: var(--green); }
+
+  .pch-promo {
+    background: white; border: 2px solid var(--green-border);
+    border-radius: 14px; padding: 24px; text-align: center; margin: 16px 0;
+  }
+  .pch-promo h4 { font-family: 'Fraunces', serif; font-size: 18px; color: var(--g900); margin-bottom: 8px; }
+  .pch-promo p { font-size: 14px; color: var(--g500); margin-bottom: 16px; line-height: 1.5; }
+  .pch-promo a {
+    display: inline-block; padding: 12px 28px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white; text-decoration: none; border-radius: 10px;
+    font-weight: 700; font-size: 14px; transition: all 0.2s;
+  }
+  .pch-promo a:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+
+  .privacy {
+    text-align: center; padding: 30px 20px 40px; font-size: 12px;
+    color: var(--g400); line-height: 1.5; max-width: 480px; margin: 0 auto;
+  }
+  .privacy strong { color: var(--g500); }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 26px; }
+    .header p { font-size: 15px; }
+    .steps { gap: 4px; }
+    .step { font-size: 12px; }
+    .upload-inner { padding: 18px; }
+    .result-header { padding: 20px 16px 16px; }
+    .result-top-row { flex-direction: column; }
+    .line-items { padding: 16px; }
+    .math-section { padding: 16px; }
+    .deductible-section { padding: 16px; }
+    .rec-section { padding: 16px; }
+    .warnings-box { margin: 0 16px; }
+    .missing-box { margin: 16px; }
+    .bill-only-box { margin: 16px; }
+    .deadline-section { padding: 0 16px 16px; }
+    .deadline-box { flex-direction: column; gap: 8px; text-align: center; }
+    .ded-input-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState } = React;
-    const { createRoot } = ReactDOM;
+<!-- ========== UPLOAD VIEW ========== -->
+<div id="uploadView">
+  <div class="container">
+    <div class="header">
+      <div class="logo-row">🐾 Pet Claim IQ</div>
+      <h1>How much will pet insurance reimburse you for this bill?</h1>
+      <p>Upload your vet bill and insurance documents. We'll analyze your coverage line by line and show you exactly what to expect.</p>
+    </div>
 
-    // Icons
-    const Upload = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-      </svg>
-    );
+    <div class="steps">
+      <div class="step active"><span class="step-num">1</span> Share</div>
+      <span class="step-arrow">→</span>
+      <div class="step"><span class="step-num">2</span> Analyze</div>
+      <span class="step-arrow">→</span>
+      <div class="step"><span class="step-num">3</span> See Results</div>
+    </div>
 
-    const Check = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M20 6L9 17l-5-5"/>
-      </svg>
-    );
+    <div class="upload-section">
+      <div class="upload-inner">
 
-    const X = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    );
-
-    const FileText = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
-      </svg>
-    );
-
-    const DollarSign = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-      </svg>
-    );
-
-    const INSURANCE_RULES = {
-      'healthy-paws': {
-        name: 'Healthy Paws',
-        excludes: ['Veterinary examination fees', 'Preventive care', 'Pre-existing conditions'],
-        waitingPeriods: { accident: 15, illness: 15, hipDysplasia: 365 }
-      }
-    };
-
-    function PetClaimIQ() {
-      const [step, setStep] = useState('upload');
-      const [vetBill, setVetBill] = useState(null);
-      const [policyInput, setPolicyInput] = useState('select');
-
-      const [billData, setBillData] = useState({
-        petName: '', date: '', clinic: '', lineItems: [], total: 0
-      });
-
-      const [policyData, setPolicyData] = useState({
-        insurance: 'healthy-paws',
-        reimbursement: 80,
-        deductible: 500,
-        policyStart: '',
-        deductibleMet: 0
-      });
-
-      const [results, setResults] = useState(null);
-      const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-      const handleVetBillUpload = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        setVetBill(file);
-        setIsAnalyzing(true);
-
-        setTimeout(() => {
-          setBillData({
-            petName: 'Trinity',
-            date: '2026-02-04',
-            clinic: 'East Chapman Veterinary Center',
-            lineItems: [
-              { description: 'Examination', amount: 76.00, category: 'exam' },
-              { description: 'Dexamethasone injection', amount: 52.02, category: 'medication' },
-              { description: 'Cerenia injection', amount: 52.02, category: 'medication' },
-              { description: 'Prednisone tablets', amount: 15.50, category: 'medication' },
-              { description: 'Hydroxyzine tablets', amount: 15.50, category: 'medication' }
-            ],
-            total: 211.04
-          });
-          setIsAnalyzing(false);
-          setStep('validate');
-        }, 2000);
-      };
-
-      const validateExtraction = () => {
-        const calculatedTotal = billData.lineItems.reduce((sum, item) => sum + item.amount, 0);
-        return Math.abs(calculatedTotal - billData.total) < 0.01;
-      };
-
-      const analyzeCoverage = () => {
-        if (!policyData.policyStart) {
-          alert('Please enter your policy start date');
-          return;
-        }
-
-        setIsAnalyzing(true);
-
-        setTimeout(() => {
-          const rules = INSURANCE_RULES[policyData.insurance];
-          const policyStartDate = new Date(policyData.policyStart);
-          const billDate = new Date(billData.date);
-
-          const daysSincePolicyStart = Math.floor((billDate - policyStartDate) / (1000 * 60 * 60 * 24));
-          const pastWaitingPeriod = daysSincePolicyStart >= rules.waitingPeriods.illness;
-
-          const analyzedItems = billData.lineItems.map(item => {
-            let covered = true;
-            let reason = '';
-
-            if (item.category === 'exam') {
-              covered = false;
-              reason = 'Exam fees excluded by policy';
-            } else if (!pastWaitingPeriod) {
-              covered = false;
-              reason = `Within ${rules.waitingPeriods.illness}-day waiting period`;
-            }
-
-            return { ...item, covered, reason };
-          });
-
-          const totalCovered = analyzedItems.filter(item => item.covered).reduce((sum, item) => sum + item.amount, 0);
-          const totalNotCovered = analyzedItems.filter(item => !item.covered).reduce((sum, item) => sum + item.amount, 0);
-
-          const reimbursementAmount = totalCovered * (policyData.reimbursement / 100);
-          const remainingDeductible = Math.max(0, policyData.deductible - policyData.deductibleMet);
-          const finalReimbursement = Math.max(0, reimbursementAmount - remainingDeductible);
-          const deductibleUsed = Math.min(remainingDeductible, reimbursementAmount);
-
-          setResults({
-            pastWaitingPeriod,
-            analyzedItems,
-            totalCovered,
-            totalNotCovered,
-            reimbursementAmount,
-            deductibleUsed,
-            finalReimbursement,
-            newDeductibleMet: policyData.deductibleMet + deductibleUsed
-          });
-
-          setIsAnalyzing(false);
-          setStep('results');
-        }, 1500);
-      };
-
-      // Header Component
-      const Header = () => (
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-6 py-6">
-            <div className="flex items-center justify-between">
-              <div className="text-center flex-1">
-                <div className="inline-block">
-                  <h1 className="text-5xl font-bold text-pch-teal tracking-tight">PCH</h1>
-                  <p className="text-pch-orange text-sm font-semibold tracking-wide">PET CLAIM HELPER</p>
-                </div>
-              </div>
+        <div class="upload-group">
+          <div class="upload-label">📄 Vet Bill <span class="req">Required</span></div>
+          <div class="upload-hint">Your vet bill or invoice showing itemized charges</div>
+          <div class="drop-zone" id="dropVetBill">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="vetBillInput">
+            <div class="drop-default">
+              <div class="drop-icon">📎</div>
+              <div class="drop-text"><strong>Tap to upload</strong> or drag file here</div>
             </div>
+            <div class="file-name" style="display:none"></div>
           </div>
         </div>
-      );
 
-      if (step === 'upload') {
-        return (
-          <div className="min-h-screen">
-            <Header />
-
-            <div className="max-w-5xl mx-auto px-6 py-12">
-              {/* Hero */}
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Pet Claim IQ</h2>
-                <p className="text-xl text-gray-600 mb-2">Will your vet bill be covered?</p>
-                <p className="text-gray-500">Find out in seconds—before you file</p>
-              </div>
-
-              {/* Upload Cards */}
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {/* Vet Bill */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-pch-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <FileText className="w-8 h-8 text-pch-teal" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">Upload Vet Bill</h3>
-                    <p className="text-gray-600 mb-6 text-sm">Photo or PDF of your receipt</p>
-
-                    <label>
-                      <input
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleVetBillUpload}
-                        className="hidden"
-                      />
-                      <div className="bg-pch-teal text-white px-6 py-3 rounded-xl font-semibold cursor-pointer hover:bg-pch-teal-dark transition-colors inline-block">
-                        {vetBill ? '✓ Bill Uploaded' : 'Choose File'}
-                      </div>
-                    </label>
-
-                    {vetBill && (
-                      <p className="mt-3 text-sm text-gray-500">{vetBill.name}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Policy Info */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 card-hover">
-                  <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-pch-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <DollarSign className="w-8 h-8 text-pch-blue" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">Your Policy</h3>
-                    <p className="text-gray-600 text-sm">Tell us about your insurance</p>
-                  </div>
-
-                  <div className="flex gap-2 mb-6">
-                    <button
-                      onClick={() => setPolicyInput('select')}
-                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                        policyInput === 'select'
-                          ? 'bg-pch-teal text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      Enter Details
-                    </button>
-                    <button
-                      onClick={() => setPolicyInput('upload')}
-                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                        policyInput === 'upload'
-                          ? 'bg-pch-teal text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      Upload Policy
-                    </button>
-                  </div>
-
-                  {policyInput === 'select' ? (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Insurance</label>
-                        <select
-                          value={policyData.insurance}
-                          onChange={(e) => setPolicyData(prev => ({ ...prev, insurance: e.target.value }))}
-                          className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-pch-teal focus:outline-none text-sm"
-                        >
-                          <option value="healthy-paws">Healthy Paws</option>
-                        </select>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Reimburse %</label>
-                          <input
-                            type="number"
-                            value={policyData.reimbursement}
-                            onChange={(e) => setPolicyData(prev => ({ ...prev, reimbursement: parseInt(e.target.value) }))}
-                            className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-pch-teal focus:outline-none text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Deductible</label>
-                          <input
-                            type="number"
-                            value={policyData.deductible}
-                            onChange={(e) => setPolicyData(prev => ({ ...prev, deductible: parseInt(e.target.value) }))}
-                            className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-pch-teal focus:outline-none text-sm"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Policy Start</label>
-                        <input
-                          type="date"
-                          value={policyData.policyStart}
-                          onChange={(e) => setPolicyData(prev => ({ ...prev, policyStart: e.target.value }))}
-                          className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-pch-teal focus:outline-none text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Deductible Met <span className="text-gray-400 font-normal">(optional)</span></label>
-                        <input
-                          type="number"
-                          value={policyData.deductibleMet}
-                          onChange={(e) => setPolicyData(prev => ({ ...prev, deductibleMet: parseInt(e.target.value) || 0 }))}
-                          className="w-full px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-pch-teal focus:outline-none text-sm"
-                          placeholder="$0"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <label>
-                      <input type="file" accept=".pdf" className="hidden" />
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-pch-teal transition-colors">
-                        <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-600">Upload Declarations Page</p>
-                      </div>
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              {isAnalyzing && (
-                <div className="text-center py-8">
-                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-pch-teal"></div>
-                  <p className="mt-4 text-gray-600">Analyzing your documents...</p>
-                </div>
-              )}
-
-              {/* Footer */}
-              <div className="text-center text-sm text-gray-500 mt-12">
-                <p>Free tool by <a href="https://petclaimhelper.com" className="text-pch-teal hover:underline font-semibold">Pet Claim Helper</a></p>
-                <p className="mt-1">© 2026 Pet Claim Helper</p>
-              </div>
+        <div class="upload-group">
+          <div class="upload-label">🛡️ Insurance Documents <span class="opt">Optional but recommended</span></div>
+          <div class="upload-hint">Upload your declarations page, policy summary, terms & conditions — whatever you have. The more you share, the more accurate your analysis.</div>
+          <div class="drop-zone" id="dropInsurance">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="insuranceInput" multiple>
+            <div class="drop-default">
+              <div class="drop-icon">📎</div>
+              <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
             </div>
           </div>
-        );
-      }
+          <div class="file-chips" id="insuranceChips"></div>
+        </div>
 
-      if (step === 'validate') {
-        const isValid = validateExtraction();
+        <div class="helper-box">
+          <span class="hb-icon">💡</span>
+          <p>Don't worry about document names — just upload whatever your insurance company sent you. We'll figure out what's what. No insurance docs? We'll still extract your vet bill details and tell you exactly what we need for a full analysis.</p>
+        </div>
 
-        return (
-          <div className="min-h-screen">
-            <Header />
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeDocuments()">Analyze My Coverage</button>
+      </div>
+    </div>
 
-            <div className="max-w-4xl mx-auto px-6 py-12">
-              <h2 className="text-3xl font-bold text-center mb-2 text-gray-900">Review & Confirm</h2>
-              <p className="text-center text-gray-600 mb-8">Make sure everything looks correct</p>
+    <p style="text-align:center; font-size:12px; color:var(--g400); margin-bottom:8px;">
+      Results are AI-generated estimates based on your documents. Always verify with your insurance company.
+    </p>
+  </div>
+</div>
 
-              {/* Bill Details */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{billData.petName}'s Vet Visit</h3>
-                    <p className="text-sm text-gray-600">{new Date(billData.date).toLocaleDateString()} • {billData.clinic}</p>
-                  </div>
-                  {isValid ? (
-                    <div className="flex items-center gap-2 text-pch-teal">
-                      <Check className="w-5 h-5" />
-                      <span className="text-sm font-semibold">Verified</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-red-600">
-                      <X className="w-5 h-5" />
-                      <span className="text-sm font-semibold">Check totals</span>
-                    </div>
-                  )}
-                </div>
+<!-- ========== LOADING VIEW ========== -->
+<div id="loadingView" class="loading-overlay">
+  <div class="container">
+    <div class="spinner"></div>
+    <h3>Analyzing your documents...</h3>
+    <p>Reading your vet bill, checking policy exclusions, running the math.<br>This usually takes 30–60 seconds.</p>
+  </div>
+</div>
 
-                <div className="space-y-2">
-                  {billData.lineItems.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg">
-                      <span className="text-sm text-gray-700">{item.description}</span>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={item.amount}
-                        onChange={(e) => {
-                          const newItems = [...billData.lineItems];
-                          newItems[idx].amount = parseFloat(e.target.value);
-                          setBillData(prev => ({ ...prev, lineItems: newItems }));
-                        }}
-                        className="w-24 px-3 py-1.5 rounded border border-gray-300 focus:border-pch-teal focus:outline-none text-right text-sm"
-                      />
-                    </div>
-                  ))}
+<!-- ========== ERROR VIEW ========== -->
+<div id="errorView" class="error-box">
+  <div class="container">
+    <div class="err-icon">😿</div>
+    <p id="errorMsg">Something went wrong analyzing your documents. Please try again.</p>
+    <button onclick="resetAll()">Try Again</button>
+  </div>
+</div>
 
-                  <div className="flex justify-between items-center py-3 px-4 bg-pch-teal/10 rounded-lg font-semibold">
-                    <span className="text-gray-900">Total</span>
-                    <span className="text-lg text-gray-900">${billData.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
+<!-- ========== RESULTS VIEW ========== -->
+<div id="resultsView" class="results-section">
+  <div class="container">
+    <div class="header" style="padding-top:30px; padding-bottom:0;">
+      <div class="logo-row">🐾 Pet Claim IQ — Your Results</div>
+    </div>
 
-              {/* Policy Summary */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">Policy Summary</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500 mb-1">Insurance</p>
-                    <p className="font-semibold text-gray-900">Healthy Paws</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 mb-1">Reimbursement</p>
-                    <p className="font-semibold text-gray-900">{policyData.reimbursement}%</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 mb-1">Deductible</p>
-                    <p className="font-semibold text-gray-900">${policyData.deductible}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 mb-1">Policy Start</p>
-                    <p className="font-semibold text-gray-900">{policyData.policyStart || 'Not set'}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setStep('upload')}
-                  className="flex-1 py-3 rounded-xl border-2 border-gray-300 font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={analyzeCoverage}
-                  disabled={!isValid || !policyData.policyStart}
-                  className="flex-1 py-3 rounded-xl bg-pch-teal text-white font-semibold hover:bg-pch-teal-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Analyze Coverage →
-                </button>
-              </div>
-            </div>
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-top-row">
+          <div class="result-pet">
+            <h3 id="rPetName">Your Pet's Vet Visit</h3>
+            <div class="pet-sub" id="rPetSub"></div>
           </div>
-        );
-      }
+          <div class="result-insurer" id="rInsurer"></div>
+        </div>
+        <div class="result-meta" id="rMeta"></div>
+      </div>
 
-      if (step === 'results' && results) {
-        const shouldSubmit = results.totalCovered > 0;
+      <div class="line-items">
+        <div class="section-title" id="rLineTitle">Line-by-Line Coverage Analysis</div>
+        <div id="rLineItems"></div>
+      </div>
 
-        return (
-          <div className="min-h-screen">
-            <Header />
+      <div id="rMissing" style="display:none;"></div>
+      <div id="rBillOnly" style="display:none;"></div>
+      <div id="rWarnings" style="display:none; padding:0 0 20px 0;"></div>
 
-            <div className="max-w-4xl mx-auto px-6 py-12">
-              <h2 className="text-3xl font-bold text-center mb-2 text-gray-900">Coverage Analysis</h2>
-              <p className="text-center text-gray-600 mb-8">{billData.petName}'s Claim • {new Date(billData.date).toLocaleDateString()}</p>
+      <div class="math-section" id="rMathSection" style="display:none;">
+        <div class="section-title">Reimbursement Estimate</div>
+        <div class="math-box" id="rMath"></div>
+      </div>
 
-              {/* Recommendation */}
-              <div className={`rounded-2xl p-6 mb-8 ${shouldSubmit ? 'bg-pch-teal/10 border-2 border-pch-teal' : 'bg-red-50 border-2 border-red-500'}`}>
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${shouldSubmit ? 'bg-pch-teal' : 'bg-red-500'}`}>
-                    {shouldSubmit ? <Check className="w-7 h-7 text-white" /> : <X className="w-7 h-7 text-white" />}
-                  </div>
-                  <div>
-                    <h3 className={`text-2xl font-bold ${shouldSubmit ? 'text-pch-teal-dark' : 'text-red-900'}`}>
-                      {shouldSubmit ? 'Submit This Claim' : "Don't Submit Yet"}
-                    </h3>
-                    <p className={shouldSubmit ? 'text-pch-teal-dark' : 'text-red-700'}>
-                      {shouldSubmit ? 'Parts of this bill are covered' : "This bill isn't covered by your policy"}
-                    </p>
-                  </div>
-                </div>
-              </div>
+      <div class="deductible-section" id="rDedSection" style="display:none;">
+        <div class="section-title">Calculate Your Actual Reimbursement</div>
+        <p style="font-size:13px; color:var(--g500); margin-bottom:4px;">Enter how much of your annual deductible you've already used this policy year.</p>
+        <div class="ded-input-row">
+          <label for="dedInput">Deductible used so far: $</label>
+          <input type="number" class="ded-input" id="dedInput" placeholder="0.00" min="0" step="0.01">
+          <span class="ded-annual" id="dedAnnual"></span>
+        </div>
+        <div class="ded-results" id="dedResults"></div>
+      </div>
 
-              {/* Breakdown */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">What's Covered</h3>
+      <div class="deadline-section" id="rDeadline" style="display:none;"></div>
 
-                <div className="space-y-2 mb-6">
-                  {results.analyzedItems.map((item, idx) => (
-                    <div key={idx} className={`p-4 rounded-lg ${item.covered ? 'bg-green-50' : 'bg-red-50'}`}>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                          {item.covered ? <Check className="w-5 h-5 text-green-600" /> : <X className="w-5 h-5 text-red-600" />}
-                          <div>
-                            <p className="font-medium text-gray-900">{item.description}</p>
-                            {!item.covered && <p className="text-sm text-red-600">{item.reason}</p>}
-                          </div>
-                        </div>
-                        <span className="font-semibold text-gray-900">${item.amount.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      <div class="rec-section" id="rRecSection" style="display:none;">
+        <div id="rRec"></div>
+      </div>
+    </div>
 
-                <div className="border-t pt-4 space-y-2">
-                  <div className="flex justify-between text-green-700">
-                    <span className="font-medium">Covered</span>
-                    <span className="font-semibold">${results.totalCovered.toFixed(2)}</span>
-                  </div>
-                  {results.totalNotCovered > 0 && (
-                    <div className="flex justify-between text-red-700">
-                      <span className="font-medium">Not Covered</span>
-                      <span className="font-semibold">${results.totalNotCovered.toFixed(2)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+    <div class="pch-promo">
+      <h4>Want to actually file this claim?</h4>
+      <p>Pet Claim Helper tracks your vet bills, files claims automatically, monitors deadlines, and shows you exactly what insurance owes you.</p>
+      <a href="https://petclaimhelper.com" target="_blank">Try Pet Claim Helper Free →</a>
+    </div>
 
-              {/* Reimbursement */}
-              <div className="pch-gradient rounded-2xl p-6 text-white mb-8">
-                <h3 className="text-xl font-semibold mb-6">Estimated Reimbursement</h3>
+    <button class="start-over-btn" onclick="resetAll()">← Analyze Another Bill</button>
+  </div>
+</div>
 
-                <div className="space-y-3 bg-white/10 rounded-xl p-5">
-                  <div className="flex justify-between items-center">
-                    <span>Covered amount</span>
-                    <span className="font-semibold text-lg">${results.totalCovered.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Your reimbursement ({policyData.reimbursement}%)</span>
-                    <span className="font-semibold text-lg">${results.reimbursementAmount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Minus deductible</span>
-                    <span className="font-semibold text-lg">-${results.deductibleUsed.toFixed(2)}</span>
-                  </div>
-                  <div className="border-t border-white/30 pt-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold">You Get Back</span>
-                      <span className="text-3xl font-bold">${results.finalReimbursement.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
+<div class="privacy">
+  <strong>🔒 Your Privacy</strong><br>
+  Your documents are analyzed in real-time and immediately deleted. We do not store, save, or retain any of your files or personal information. Nothing is kept after your analysis is complete.
+</div>
 
-                {results.deductibleUsed > 0 && (
-                  <div className="mt-5 bg-white/10 rounded-xl p-4 text-sm">
-                    <p className="mb-1">
-                      This claim uses <strong>${results.deductibleUsed.toFixed(2)}</strong> of your deductible.
-                    </p>
-                    <p>Remaining: <strong>${(policyData.deductible - results.newDeductibleMet).toFixed(2)}</strong></p>
-                  </div>
-                )}
-              </div>
+<script>
+const API_URL = 'https://pet-claim-helper.onrender.com/api/analyze-claim';
+let vetBillFile = null;
+let insuranceFiles = [];
+let lastAnalysis = null;
 
-              {/* Next Steps */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">Next Steps</h3>
-                <ol className="space-y-2 text-gray-700">
-                  <li className="flex gap-3">
-                    <span className="text-pch-teal font-bold">1.</span>
-                    <span>File this claim with Healthy Paws</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-pch-teal font-bold">2.</span>
-                    <span>Keep your receipt and this analysis</span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="text-pch-teal font-bold">3.</span>
-                    <span>Track your deductible progress</span>
-                  </li>
-                </ol>
-              </div>
+// === VET BILL ===
+const vetBillZone = document.getElementById('dropVetBill');
+const vetBillInput = document.getElementById('vetBillInput');
 
-              {/* CTAs */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <button
-                  onClick={() => {
-                    setStep('upload');
-                    setResults(null);
-                    setVetBill(null);
-                  }}
-                  className="py-3 rounded-xl border-2 border-gray-300 font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Analyze Another Bill
-                </button>
-                <button
-                  onClick={() => window.open('https://petclaimhelper.com', '_blank')}
-                  className="py-3 rounded-xl bg-pch-teal text-white font-semibold hover:bg-pch-teal-dark transition-colors"
-                >
-                  Get Pet Claim Helper →
-                </button>
-              </div>
+vetBillInput.addEventListener('change', (e) => {
+  if (e.target.files[0]) setVetBill(e.target.files[0]);
+});
+vetBillZone.addEventListener('dragover', (e) => { e.preventDefault(); vetBillZone.classList.add('dragover'); });
+vetBillZone.addEventListener('dragleave', () => vetBillZone.classList.remove('dragover'));
+vetBillZone.addEventListener('drop', (e) => {
+  e.preventDefault(); vetBillZone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) { setVetBill(e.dataTransfer.files[0]); vetBillInput.files = e.dataTransfer.files; }
+});
 
-              {/* Footer */}
-              <div className="text-center text-sm text-gray-500 mt-12">
-                <p>Powered by <a href="https://petclaimhelper.com" className="text-pch-teal hover:underline font-semibold">Pet Claim Helper</a></p>
-              </div>
-            </div>
-          </div>
-        );
-      }
+function setVetBill(file) {
+  vetBillFile = file;
+  vetBillZone.classList.add('has-file');
+  vetBillZone.querySelector('.drop-default').style.display = 'none';
+  const nameEl = vetBillZone.querySelector('.file-name');
+  nameEl.style.display = 'flex';
+  nameEl.innerHTML = `✅ ${trunc(file.name)} <button class="file-remove" onclick="removeVetBill(event)">&times;</button>`;
+}
 
-      return null;
+function removeVetBill(e) {
+  e.stopPropagation();
+  vetBillFile = null; vetBillInput.value = '';
+  vetBillZone.classList.remove('has-file');
+  vetBillZone.querySelector('.drop-default').style.display = '';
+  vetBillZone.querySelector('.file-name').style.display = 'none';
+}
+
+// === INSURANCE DOCS ===
+const insuranceZone = document.getElementById('dropInsurance');
+const insuranceInput = document.getElementById('insuranceInput');
+const chipsContainer = document.getElementById('insuranceChips');
+
+insuranceInput.addEventListener('change', (e) => addInsuranceFiles(e.target.files));
+insuranceZone.addEventListener('dragover', (e) => { e.preventDefault(); insuranceZone.classList.add('dragover'); });
+insuranceZone.addEventListener('dragleave', () => insuranceZone.classList.remove('dragover'));
+insuranceZone.addEventListener('drop', (e) => {
+  e.preventDefault(); insuranceZone.classList.remove('dragover');
+  addInsuranceFiles(e.dataTransfer.files);
+});
+
+function addInsuranceFiles(fileList) {
+  for (let i = 0; i < fileList.length; i++) {
+    if (insuranceFiles.length >= 5) break;
+    insuranceFiles.push(fileList[i]);
+  }
+  renderInsuranceChips();
+}
+
+function removeInsuranceFile(idx) {
+  insuranceFiles.splice(idx, 1);
+  renderInsuranceChips();
+}
+
+function renderInsuranceChips() {
+  if (insuranceFiles.length === 0) {
+    chipsContainer.innerHTML = '';
+    insuranceZone.classList.remove('has-file');
+    insuranceZone.querySelector('.drop-default').style.display = '';
+    return;
+  }
+  insuranceZone.classList.add('has-file');
+  insuranceZone.querySelector('.drop-default').style.display = 'none';
+  let html = insuranceFiles.map((f, i) =>
+    `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeInsuranceFile(${i})">&times;</button></div>`
+  ).join('');
+  if (insuranceFiles.length < 5) {
+    html += `<button class="add-more-btn" onclick="document.getElementById('insuranceInput').click()">+ Add more</button>`;
+  }
+  chipsContainer.innerHTML = html;
+}
+
+function trunc(name) { return name.length > 25 ? name.substring(0, 22) + '...' : name; }
+
+// === ANALYZE ===
+async function analyzeDocuments() {
+  if (!vetBillFile) { alert('Please upload your vet bill.'); return; }
+
+  document.getElementById('uploadView').style.display = 'none';
+  document.getElementById('loadingView').classList.add('visible');
+  document.getElementById('errorView').classList.remove('visible');
+  document.getElementById('errorView').style.display = 'none';
+  document.getElementById('resultsView').classList.remove('visible');
+  window.scrollTo(0, 0);
+
+  const formData = new FormData();
+  formData.append('vetBill', vetBillFile);
+  insuranceFiles.forEach(f => formData.append('insuranceDocs', f));
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90000);
+    const response = await fetch(API_URL, { method: 'POST', body: formData, signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      if (response.status === 429) showError('Too many requests. Please wait a few minutes and try again.');
+      else showError(err.error || 'Something went wrong analyzing your documents. Please try again.');
+      return;
     }
 
-    const root = createRoot(document.getElementById('root'));
-    root.render(<PetClaimIQ />);
-  </script>
+    const result = await response.json();
+    if (result.ok && result.data) {
+      lastAnalysis = result.data;
+      renderResults(result.data);
+    } else {
+      showError(result.error || 'Analysis failed. Please try again.');
+    }
+  } catch (err) {
+    if (err.name === 'AbortError') showError('Analysis is taking longer than expected. Please try again in a moment.');
+    else showError('Something went wrong. Please check your connection and try again.');
+  }
+}
+
+function showError(msg) {
+  document.getElementById('loadingView').classList.remove('visible');
+  document.getElementById('errorView').classList.add('visible');
+  document.getElementById('errorView').style.display = 'block';
+  document.getElementById('errorMsg').textContent = msg;
+  window.scrollTo(0, 0);
+}
+
+function resetAll() {
+  vetBillFile = null; insuranceFiles = []; lastAnalysis = null;
+  vetBillInput.value = ''; insuranceInput.value = '';
+  vetBillZone.classList.remove('has-file');
+  vetBillZone.querySelector('.drop-default').style.display = '';
+  vetBillZone.querySelector('.file-name').style.display = 'none';
+  chipsContainer.innerHTML = '';
+  insuranceZone.classList.remove('has-file');
+  insuranceZone.querySelector('.drop-default').style.display = '';
+  document.getElementById('uploadView').style.display = '';
+  document.getElementById('loadingView').classList.remove('visible');
+  document.getElementById('errorView').classList.remove('visible');
+  document.getElementById('errorView').style.display = 'none';
+  document.getElementById('resultsView').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
+function goBackToUpload() {
+  document.getElementById('uploadView').style.display = '';
+  document.getElementById('resultsView').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
+// === RENDER RESULTS ===
+function renderResults(data) {
+  document.getElementById('loadingView').classList.remove('visible');
+  document.getElementById('resultsView').classList.add('visible');
+  window.scrollTo(0, 0);
+
+  const { completeness, missingInfo, missingDocumentHint, petInfo, billInfo, policyInfo, analysis } = data;
+  const isFull = completeness === 'full';
+  const isPartial = completeness === 'partial';
+  const isBillOnly = completeness === 'bill_only';
+
+  // Pet name
+  const petName = petInfo?.name || 'Your Pet';
+  document.getElementById('rPetName').textContent = `🐾 ${petName}'s Vet Visit`;
+  document.getElementById('rPetSub').textContent = [petInfo?.breed, petInfo?.species].filter(Boolean).join(' · ') || '';
+
+  // Insurer
+  const insurerEl = document.getElementById('rInsurer');
+  if (policyInfo?.insurer) { insurerEl.textContent = policyInfo.insurer; insurerEl.style.display = ''; }
+  else { insurerEl.style.display = 'none'; }
+
+  // Meta
+  const metaHtml = [];
+  if (billInfo?.clinic) metaHtml.push(`🏥 ${billInfo.clinic}`);
+  if (billInfo?.date) metaHtml.push(`📅 <strong>${billInfo.date}</strong>`);
+  metaHtml.push(`💰 Total: <strong>$${fmt(analysis?.totalBill || billInfo?.total || 0)}</strong>`);
+  document.getElementById('rMeta').innerHTML = metaHtml.map(m => `<span>${m}</span>`).join('');
+
+  // Line items title
+  document.getElementById('rLineTitle').textContent = isFull ? 'Line-by-Line Coverage Analysis' : 'Vet Bill Line Items';
+
+  // Line items
+  const liContainer = document.getElementById('rLineItems');
+  liContainer.innerHTML = '';
+  (billInfo?.lineItems || []).forEach(item => {
+    const isUnknown = item.covered === null;
+    const isCovered = item.covered === true;
+    const isUncertain = !isUnknown && (item.reason || '').toLowerCase().includes('uncertain');
+    const isExcluded = item.covered === false && !isUncertain;
+
+    let statusClass, statusIcon, reasonClass, amtClass;
+    if (isUnknown) { statusClass = 'unknown'; statusIcon = '—'; reasonClass = ''; amtClass = ''; }
+    else if (isCovered) { statusClass = 'covered'; statusIcon = '✓'; reasonClass = ''; amtClass = ''; }
+    else if (isUncertain) { statusClass = 'uncertain'; statusIcon = '?'; reasonClass = 'unc'; amtClass = ''; }
+    else { statusClass = 'excluded'; statusIcon = '✗'; reasonClass = 'exc'; amtClass = 'struck'; }
+
+    liContainer.innerHTML += `
+      <div class="line-item">
+        <div class="li-left">
+          <div class="li-status ${statusClass}">${statusIcon}</div>
+          <div>
+            <div class="li-name">${esc(item.description)}</div>
+            ${item.reason && !isUnknown ? `<div class="li-reason ${reasonClass}">${esc(item.reason)}</div>` : ''}
+          </div>
+        </div>
+        <div class="li-amount ${amtClass}">$${fmt(item.amount)}</div>
+      </div>`;
+  });
+
+  // Partial
+  const missingEl = document.getElementById('rMissing');
+  if (isPartial && missingInfo?.length) {
+    missingEl.style.display = 'block';
+    missingEl.innerHTML = `<div class="missing-box">
+      <h4>⚠️ We need a bit more to give you accurate numbers</h4>
+      <ul>${missingInfo.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+      ${missingDocumentHint ? `<p class="hint">💡 ${esc(missingDocumentHint)}</p>` : ''}
+      <button onclick="goBackToUpload()">Upload More Documents</button>
+    </div>`;
+  } else { missingEl.style.display = 'none'; }
+
+  // Bill only
+  const billOnlyEl = document.getElementById('rBillOnly');
+  if (isBillOnly) {
+    billOnlyEl.style.display = 'block';
+    billOnlyEl.innerHTML = `<div class="bill-only-box">
+      <h4>📄 Upload your insurance documents to see coverage analysis</h4>
+      <p>We extracted your vet bill details above. To analyze what's covered and estimate your reimbursement, we need at least one insurance document.</p>
+      <p>Look for emails from your insurance company with subject lines like "Your Policy Documents," "Declarations Page," or "Welcome to [Insurer Name]."</p>
+      <button onclick="goBackToUpload()">Add Insurance Documents</button>
+    </div>`;
+  } else { billOnlyEl.style.display = 'none'; }
+
+  // Warnings
+  const warnBox = document.getElementById('rWarnings');
+  if (isFull && analysis?.exclusionWarnings?.length) {
+    warnBox.style.display = 'block';
+    warnBox.innerHTML = `<div class="warnings-box">${analysis.exclusionWarnings.map(w => `<p>⚠️ <strong>${esc(w)}</strong></p>`).join('')}</div>`;
+  } else { warnBox.style.display = 'none'; }
+
+  // Math
+  const mathSection = document.getElementById('rMathSection');
+  if (isFull && analysis) {
+    mathSection.style.display = '';
+    const rate = policyInfo?.reimbursementRate || 80;
+    const maxReimb = analysis.maxReimbursement || analysis.reimbursementBeforeDeductible || 0;
+    document.getElementById('rMath').innerHTML = `
+      <div class="math-row"><span class="math-label">Total bill</span><span class="math-val">$${fmt(analysis.totalBill)}</span></div>
+      <div class="math-row"><span class="math-label">Excluded charges</span><span class="math-val">− $${fmt(analysis.totalExcluded)}</span></div>
+      <div class="math-row math-divider"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(analysis.totalCovered)}</span></div>
+      <div class="math-row"><span class="math-label">× ${rate}% reimbursement rate</span><span class="math-val">$${fmt(maxReimb)}</span></div>
+      <div class="math-row math-result"><span class="math-label">Max possible reimbursement</span><span class="math-val">$${fmt(maxReimb)}</span></div>
+      <div class="math-note">This is what you'd receive if your annual deductible is fully met. Enter your deductible progress below for a precise estimate.</div>`;
+  } else { mathSection.style.display = 'none'; }
+
+  // Deductible calculator
+  const dedSection = document.getElementById('rDedSection');
+  if (isFull && policyInfo?.annualDeductible) {
+    dedSection.style.display = '';
+    document.getElementById('dedAnnual').textContent = `Annual deductible: $${fmt(policyInfo.annualDeductible)}`;
+    document.getElementById('dedInput').value = '';
+    document.getElementById('dedResults').classList.remove('visible');
+    document.getElementById('dedResults').innerHTML = '';
+  } else { dedSection.style.display = 'none'; }
+
+  // Deadline
+  const dlSection = document.getElementById('rDeadline');
+  if (isFull && policyInfo?.filingDeadline) {
+    dlSection.style.display = 'block';
+    dlSection.innerHTML = `<div class="section-title">Filing Deadline</div>
+      <div class="deadline-box"><div class="deadline-left"><span>📅</span>
+      <div class="deadline-text">File by <strong>${esc(policyInfo.filingDeadline)}</strong></div></div></div>`;
+  } else { dlSection.style.display = 'none'; }
+
+  // Recommendation
+  const recSection = document.getElementById('rRecSection');
+  if (isFull && analysis) {
+    recSection.style.display = '';
+    const shouldFile = analysis.shouldFile !== false;
+    document.getElementById('rRec').innerHTML = `
+      <div class="rec-box ${shouldFile ? '' : 'no-file'}">
+        <div class="rec-header"><span>${shouldFile ? '✅' : '⚠️'}</span>
+        <h4>Should You File This Claim?</h4></div>
+        <div class="rec-text"><strong>${shouldFile ? 'Yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || '')}</div>
+      </div>`;
+  } else { recSection.style.display = 'none'; }
+}
+
+// === DEDUCTIBLE CALCULATOR ===
+document.getElementById('dedInput').addEventListener('input', function() {
+  if (!lastAnalysis) return;
+  const { policyInfo, analysis } = lastAnalysis;
+  const dedUsed = parseFloat(this.value) || 0;
+  const annualDed = policyInfo?.annualDeductible || 0;
+  const totalCovered = analysis?.totalCovered || 0;
+  const rate = (policyInfo?.reimbursementRate || 80) / 100;
+  const calcMethod = policyInfo?.calculationMethod || 'deductible-first';
+
+  if (dedUsed < 0 || isNaN(dedUsed)) return;
+
+  const remaining = Math.max(0, annualDed - dedUsed);
+  const appliedToDed = Math.min(remaining, totalCovered);
+  const eligibleForReimb = Math.max(0, totalCovered - remaining);
+
+  let estimatedReimb;
+  if (calcMethod === 'reimbursement-first') {
+    estimatedReimb = Math.max(0, (totalCovered * rate) - remaining);
+  } else {
+    estimatedReimb = eligibleForReimb * rate;
+  }
+  estimatedReimb = Math.round(estimatedReimb * 100) / 100;
+
+  const newProgress = Math.min(annualDed, dedUsed + appliedToDed);
+  const progressPct = Math.min(100, (newProgress / annualDed) * 100);
+
+  const resultsEl = document.getElementById('dedResults');
+  resultsEl.classList.add('visible');
+  resultsEl.innerHTML = `
+    <div class="section-title">Your Estimated Reimbursement</div>
+    <div class="math-row"><span class="math-label">Remaining deductible</span><span class="math-val">$${fmt(remaining)}</span></div>
+    <div class="math-row"><span class="math-label">Applied to deductible from this visit</span><span class="math-val">$${fmt(appliedToDed)}</span></div>
+    <div class="math-row"><span class="math-label">Eligible for reimbursement</span><span class="math-val">$${fmt(eligibleForReimb)}</span></div>
+    <div class="math-row math-result"><span class="math-label">Estimated reimbursement check</span>
+      <span class="math-val" style="color: ${estimatedReimb > 0 ? 'var(--green)' : 'var(--orange)'}">$${fmt(estimatedReimb)}</span></div>
+    ${estimatedReimb === 0 && appliedToDed > 0 ? `<div class="math-note" style="color: var(--green-dark); font-style: normal; font-weight: 500;">
+      💡 Even though this visit won't result in a check, filing applies $${fmt(appliedToDed)} toward your deductible. That's progress toward future reimbursements!</div>` : ''}
+    <div class="ded-progress-bar"><div class="ded-progress-fill" style="width: ${progressPct}%"></div></div>
+    <div class="ded-progress-label"><span>$${fmt(newProgress)} used</span><span>$${fmt(annualDed)} deductible</span></div>
+    ${progressPct >= 100 ? `<div class="math-note" style="color: var(--green-dark); font-style: normal; font-weight: 600;">
+      🎉 Your deductible is fully met! Every future covered charge gets reimbursed at ${policyInfo?.reimbursementRate || 80}%.</div>`
+    : `<div class="math-note">$${fmt(Math.max(0, annualDed - newProgress))} more until you start receiving reimbursement checks.</div>`}`;
+});
+
+function fmt(n) { return Number(n || 0).toFixed(2); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+</script>
 </body>
 </html>
