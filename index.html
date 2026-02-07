@@ -361,6 +361,22 @@
   }
   .privacy strong { color: var(--g600); }
 
+  /* === CONFIDENCE BADGE === */
+  .confidence-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  }
+  .confidence-badge.high { background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green-border); }
+  .confidence-badge.medium { background: var(--yellow-bg); color: #92400e; border: 1px solid var(--yellow-border); }
+  .confidence-badge.low { background: var(--red-bg); color: #991b1b; border: 1px solid var(--red-border); }
+  .confidence-help { font-size: 12px; color: var(--g500); margin-top: 6px; }
+
+  /* === INSURER DISCLAIMER ON RESULTS === */
+  .results-disclaimer {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 12px; color: var(--g500); margin: 8px 0 4px; font-weight: 500;
+  }
+
   /* === MOBILE ENHANCEMENTS === */
   @media (max-width: 640px) {
     body { font-size: 16px; }
@@ -489,11 +505,11 @@
     <div class="header">
       <div class="logo-row">🐾 Pet Claim IQ</div>
       <h1>How much will pet insurance reimburse you for this bill?</h1>
-      <p>Upload your vet bill and insurance documents. Our AI analyzes your coverage line by line and shows you exactly what to expect.</p>
+      <p>Upload your vet bill and insurance documents. Our AI analyzes your coverage line by line and gives you a clear estimate of what you'll likely get back.</p>
       <div class="trust-bar">
-        <div class="trust-item"><span class="ti-icon green">🔒</span> Files deleted immediately</div>
+        <div class="trust-item"><span class="ti-icon green">🔒</span> Files deleted after analysis</div>
         <div class="trust-item"><span class="ti-icon green">🤖</span> AI-powered analysis</div>
-        <div class="trust-item"><span class="ti-icon blue">ℹ️</span> Your insurer makes the final call</div>
+        <div class="trust-item"><span class="ti-icon blue">ℹ️</span> Your insurer makes the final decision</div>
       </div>
     </div>
 
@@ -522,29 +538,55 @@
         </div>
 
         <div class="upload-group">
-          <div class="upload-label">🛡️ Insurance Documents <span class="opt">Optional but recommended</span></div>
-          <div class="upload-hint">Upload your declarations page, policy summary, terms & conditions — whatever you have. The more you share, the more accurate your analysis.</div>
-          <div class="drop-zone" id="dropInsurance">
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="insuranceInput" multiple>
+          <div class="upload-label">📋 Coverage Details <span class="opt">Recommended</span></div>
+          <div class="upload-hint">Shows your deductible and reimbursement %.</div>
+          <div class="drop-zone" id="dropCoverage">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="coverageInput" multiple>
             <div class="drop-default">
               <div class="drop-icon">📎</div>
               <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
             </div>
           </div>
-          <div class="file-chips" id="insuranceChips"></div>
+          <div class="file-chips" id="coverageChips"></div>
+        </div>
+
+        <div class="upload-group">
+          <div class="upload-label">📑 Plan Rules <span class="opt">Recommended</span></div>
+          <div class="upload-hint">Explains what is and isn't covered.</div>
+          <div class="drop-zone" id="dropRules">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="rulesInput" multiple>
+            <div class="drop-default">
+              <div class="drop-icon">📎</div>
+              <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
+            </div>
+          </div>
+          <div class="file-chips" id="rulesChips"></div>
+        </div>
+
+        <div class="upload-group">
+          <div class="upload-label">📄 Full Policy <span class="opt">Optional</span></div>
+          <div class="upload-hint">Upload if you want the most accurate analysis.</div>
+          <div class="drop-zone" id="dropPolicy">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif" id="policyInput" multiple>
+            <div class="drop-default">
+              <div class="drop-icon">📎</div>
+              <div class="drop-text"><strong>Tap to upload</strong> or drag files here</div>
+            </div>
+          </div>
+          <div class="file-chips" id="policyChips"></div>
         </div>
 
         <div class="helper-box">
           <span class="hb-icon">💡</span>
-          <p>Most pet owners don't know what their insurance actually covers until they file — and by then it's too late to plan. Upload whatever your insurance company sent you and we'll break it down. No insurance docs? We'll still extract your vet bill details and tell you exactly what we need.</p>
+          <p>Not sure what to upload? Start with anything that shows your deductible and reimbursement %. If you're missing insurance documents, we can still read your vet bill and tell you which pages to add for a better estimate.</p>
         </div>
 
-        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeDocuments()">Analyze My Coverage</button>
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeDocuments()">Estimate My Reimbursement</button>
       </div>
     </div>
 
     <p style="text-align:center; font-size:13px; color:var(--g500); margin-bottom:8px; line-height:1.5;">
-      Results are AI-generated estimates to help you understand your coverage.<br>Your insurance company always makes the final determination.
+      Results are AI-generated estimates to help you understand your coverage.<br>Your insurer makes the final reimbursement decision.
     </p>
   </div>
 </div>
@@ -572,6 +614,7 @@
   <div class="container">
     <div class="header" style="padding-top:30px; padding-bottom:0;">
       <div class="logo-row">🐾 Pet Claim IQ — Your Results</div>
+      <div class="results-disclaimer">ℹ️ Your insurer makes the final reimbursement decision</div>
     </div>
 
     <div class="result-card">
@@ -581,7 +624,10 @@
             <h3 id="rPetName">Your Pet's Vet Visit</h3>
             <div class="pet-sub" id="rPetSub"></div>
           </div>
-          <div class="result-insurer" id="rInsurer"></div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <div class="result-insurer" id="rInsurer"></div>
+            <div id="rConfidence"></div>
+          </div>
         </div>
         <div class="result-meta" id="rMeta"></div>
       </div>
@@ -602,12 +648,13 @@
 
       <div class="deductible-section" id="rDedSection" style="display:none;">
         <div class="section-title">Calculate Your Actual Reimbursement</div>
-        <p style="font-size:13px; color:var(--g500); margin-bottom:4px;">Enter how much of your annual deductible you've already used this policy year.</p>
+        <p style="font-size:13px; color:var(--g600); margin-bottom:4px;">Enter how much of your annual deductible you've already used this policy year.</p>
         <div class="ded-input-row">
           <label for="dedInput">Deductible used so far: $</label>
           <input type="number" class="ded-input" id="dedInput" placeholder="0.00" min="0" step="0.01">
           <span class="ded-annual" id="dedAnnual"></span>
         </div>
+        <div id="dedRemaining" style="font-size:14px; color:var(--g700); font-weight:500; margin:-4px 0 8px;"></div>
         <div class="ded-results" id="dedResults"></div>
       </div>
 
@@ -630,13 +677,12 @@
 
 <div class="privacy">
   <strong>🔒 Your Privacy</strong><br>
-  Your documents are analyzed in real-time and immediately deleted. We do not store, save, or retain any of your files or personal information. Nothing is kept after your analysis is complete.
+  Your documents are analyzed in real-time and deleted after analysis is complete. We do not store, save, or retain any of your files or personal information.
 </div>
 
 <script>
 const API_URL = 'https://pet-claim-helper.onrender.com/api/analyze-claim';
 let vetBillFile = null;
-let insuranceFiles = [];
 let lastAnalysis = null;
 
 // === VET BILL ===
@@ -670,48 +716,65 @@ function removeVetBill(e) {
   vetBillZone.querySelector('.file-name').style.display = 'none';
 }
 
-// === INSURANCE DOCS ===
-const insuranceZone = document.getElementById('dropInsurance');
-const insuranceInput = document.getElementById('insuranceInput');
-const chipsContainer = document.getElementById('insuranceChips');
+// === INSURANCE DOCS (3 categories) ===
+const categories = ['coverage', 'rules', 'policy'];
+const catFiles = { coverage: [], rules: [], policy: [] };
+const catMaxFiles = 5;
 
-insuranceInput.addEventListener('change', (e) => addInsuranceFiles(e.target.files));
-insuranceZone.addEventListener('dragover', (e) => { e.preventDefault(); insuranceZone.classList.add('dragover'); });
-insuranceZone.addEventListener('dragleave', () => insuranceZone.classList.remove('dragover'));
-insuranceZone.addEventListener('drop', (e) => {
-  e.preventDefault(); insuranceZone.classList.remove('dragover');
-  addInsuranceFiles(e.dataTransfer.files);
+categories.forEach(cat => {
+  const zone = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
+  const input = document.getElementById(cat + 'Input');
+  const chips = document.getElementById(cat + 'Chips');
+
+  input.addEventListener('change', (e) => addCatFiles(cat, e.target.files));
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    addCatFiles(cat, e.dataTransfer.files);
+  });
 });
 
-function addInsuranceFiles(fileList) {
+function addCatFiles(cat, fileList) {
   for (let i = 0; i < fileList.length; i++) {
-    if (insuranceFiles.length >= 5) break;
-    insuranceFiles.push(fileList[i]);
+    if (catFiles[cat].length >= catMaxFiles) break;
+    catFiles[cat].push(fileList[i]);
   }
-  renderInsuranceChips();
+  renderCatChips(cat);
 }
 
-function removeInsuranceFile(idx) {
-  insuranceFiles.splice(idx, 1);
-  renderInsuranceChips();
+function removeCatFile(cat, idx) {
+  catFiles[cat].splice(idx, 1);
+  renderCatChips(cat);
 }
 
-function renderInsuranceChips() {
-  if (insuranceFiles.length === 0) {
-    chipsContainer.innerHTML = '';
-    insuranceZone.classList.remove('has-file');
-    insuranceZone.querySelector('.drop-default').style.display = '';
+function renderCatChips(cat) {
+  const zone = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
+  const chips = document.getElementById(cat + 'Chips');
+  const input = document.getElementById(cat + 'Input');
+  if (catFiles[cat].length === 0) {
+    chips.innerHTML = '';
+    zone.classList.remove('has-file');
+    zone.querySelector('.drop-default').style.display = '';
     return;
   }
-  insuranceZone.classList.add('has-file');
-  insuranceZone.querySelector('.drop-default').style.display = 'none';
-  let html = insuranceFiles.map((f, i) =>
-    `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeInsuranceFile(${i})">&times;</button></div>`
+  zone.classList.add('has-file');
+  zone.querySelector('.drop-default').style.display = 'none';
+  let html = catFiles[cat].map((f, i) =>
+    `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeCatFile('${cat}',${i})">&times;</button></div>`
   ).join('');
-  if (insuranceFiles.length < 5) {
-    html += `<button class="add-more-btn" onclick="document.getElementById('insuranceInput').click()">+ Add more</button>`;
+  if (catFiles[cat].length < catMaxFiles) {
+    html += `<button class="add-more-btn" onclick="document.getElementById('${cat}Input').click()">+ Add more</button>`;
   }
-  chipsContainer.innerHTML = html;
+  chips.innerHTML = html;
+}
+
+function getAllInsuranceFiles() {
+  return [...catFiles.coverage, ...catFiles.rules, ...catFiles.policy];
+}
+
+function getInsuranceDocCount() {
+  return { coverage: catFiles.coverage.length, rules: catFiles.rules.length, policy: catFiles.policy.length };
 }
 
 function trunc(name) { return name.length > 25 ? name.substring(0, 22) + '...' : name; }
@@ -729,7 +792,7 @@ async function analyzeDocuments() {
 
   const formData = new FormData();
   formData.append('vetBill', vetBillFile);
-  insuranceFiles.forEach(f => formData.append('insuranceDocs', f));
+  getAllInsuranceFiles().forEach(f => formData.append('insuranceDocs', f));
 
   try {
     const controller = new AbortController();
@@ -766,14 +829,19 @@ function showError(msg) {
 }
 
 function resetAll() {
-  vetBillFile = null; insuranceFiles = []; lastAnalysis = null;
-  vetBillInput.value = ''; insuranceInput.value = '';
+  vetBillFile = null; lastAnalysis = null;
+  catFiles.coverage = []; catFiles.rules = []; catFiles.policy = [];
+  vetBillInput.value = '';
   vetBillZone.classList.remove('has-file');
   vetBillZone.querySelector('.drop-default').style.display = '';
   vetBillZone.querySelector('.file-name').style.display = 'none';
-  chipsContainer.innerHTML = '';
-  insuranceZone.classList.remove('has-file');
-  insuranceZone.querySelector('.drop-default').style.display = '';
+  categories.forEach(cat => {
+    document.getElementById(cat + 'Input').value = '';
+    document.getElementById(cat + 'Chips').innerHTML = '';
+    const z = document.getElementById('drop' + cat.charAt(0).toUpperCase() + cat.slice(1));
+    z.classList.remove('has-file');
+    z.querySelector('.drop-default').style.display = '';
+  });
   document.getElementById('uploadView').style.display = '';
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('errorView').classList.remove('visible');
@@ -809,6 +877,26 @@ function renderResults(data) {
   if (policyInfo?.insurer) { insurerEl.textContent = policyInfo.insurer; insurerEl.style.display = ''; }
   else { insurerEl.style.display = 'none'; }
 
+  // Confidence badge
+  const confEl = document.getElementById('rConfidence');
+  const docCounts = getInsuranceDocCount();
+  const hasCoverage = docCounts.coverage > 0;
+  const hasRules = docCounts.rules > 0;
+  const hasPolicy = docCounts.policy > 0;
+  const hasDeductible = !!policyInfo?.annualDeductible;
+  const hasRate = !!policyInfo?.reimbursementRate;
+
+  let confLevel, confLabel;
+  if (isFull && (hasCoverage || hasPolicy) && (hasRules || hasPolicy) && hasDeductible && hasRate) {
+    confLevel = 'high'; confLabel = 'High';
+  } else if (isFull || isPartial) {
+    confLevel = 'medium'; confLabel = 'Medium';
+  } else {
+    confLevel = 'low'; confLabel = 'Low';
+  }
+  confEl.innerHTML = `<div class="confidence-badge ${confLevel}">Confidence: ${confLabel}</div>
+    <div class="confidence-help">Based on document completeness and policy clarity</div>`;
+
   // Meta
   const metaHtml = [];
   if (billInfo?.clinic) metaHtml.push(`🏥 ${billInfo.clinic}`);
@@ -823,6 +911,9 @@ function renderResults(data) {
   const liContainer = document.getElementById('rLineItems');
   liContainer.innerHTML = '';
   (billInfo?.lineItems || []).forEach(item => {
+    // Skip "Invoice Complete" or zero-amount end-of-invoice markers
+    if ((item.description || '').toLowerCase().includes('invoice complete') && (item.amount === 0 || !item.amount)) return;
+
     const isUnknown = item.covered === null;
     const isCovered = item.covered === true;
     const isUncertain = !isUnknown && (item.reason || '').toLowerCase().includes('uncertain');
@@ -834,13 +925,23 @@ function renderResults(data) {
     else if (isUncertain) { statusClass = 'uncertain'; statusIcon = '?'; reasonClass = 'unc'; amtClass = ''; }
     else { statusClass = 'excluded'; statusIcon = '✗'; reasonClass = 'exc'; amtClass = 'struck'; }
 
+    // Parse reason vs source
+    let reasonText = item.reason || '';
+    let sourceText = '';
+    const dashMatch = reasonText.match(/^(.+?)\s*[—–-]\s*(.+)$/);
+    if (dashMatch && !isUnknown) {
+      sourceText = dashMatch[1].trim();
+      reasonText = dashMatch[2].trim();
+    }
+
     liContainer.innerHTML += `
       <div class="line-item">
         <div class="li-left">
           <div class="li-status ${statusClass}">${statusIcon}</div>
           <div>
             <div class="li-name">${esc(item.description)}</div>
-            ${item.reason && !isUnknown ? `<div class="li-reason ${reasonClass}">${esc(item.reason)}</div>` : ''}
+            ${reasonText && !isUnknown ? `<div class="li-reason ${reasonClass}">${esc(reasonText)}</div>` : ''}
+            ${sourceText && !isUnknown ? `<div class="li-reason" style="color:var(--g500); font-size:11px;">Source: ${esc(sourceText)}</div>` : ''}
           </div>
         </div>
         <div class="li-amount ${amtClass}">$${fmt(item.amount)}</div>
@@ -889,8 +990,8 @@ function renderResults(data) {
       <div class="math-row"><span class="math-label">Excluded charges</span><span class="math-val">− $${fmt(analysis.totalExcluded)}</span></div>
       <div class="math-row math-divider"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(analysis.totalCovered)}</span></div>
       <div class="math-row"><span class="math-label">× ${rate}% reimbursement rate</span><span class="math-val">$${fmt(maxReimb)}</span></div>
-      <div class="math-row math-result"><span class="math-label">Max possible reimbursement</span><span class="math-val">$${fmt(maxReimb)}</span></div>
-      <div class="math-note">This is what you'd receive if your annual deductible is fully met. Enter your deductible progress below for a precise estimate.</div>`;
+      <div class="math-row math-result"><span class="math-label">Estimated reimbursement (if deductible met)</span><span class="math-val">$${fmt(maxReimb)}</span></div>
+      <div class="math-note">This assumes your annual deductible is already fully met. Enter your deductible progress below for a more precise estimate.</div>`;
   } else { mathSection.style.display = 'none'; }
 
   // Deductible calculator
@@ -917,11 +1018,14 @@ function renderResults(data) {
   if (isFull && analysis) {
     recSection.style.display = '';
     const shouldFile = analysis.shouldFile !== false;
+    const defaultReason = shouldFile
+      ? 'Filing can help you reach your deductible faster, even if reimbursement is low right now. If your plan applies these covered charges toward your deductible, filing is usually worth it.'
+      : 'Consider whether the covered amount justifies filing. Review your policy terms before deciding.';
     document.getElementById('rRec').innerHTML = `
       <div class="rec-box ${shouldFile ? '' : 'no-file'}">
         <div class="rec-header"><span>${shouldFile ? '✅' : '⚠️'}</span>
         <h4>Should You File This Claim?</h4></div>
-        <div class="rec-text"><strong>${shouldFile ? 'Yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || '')}</div>
+        <div class="rec-text"><strong>${shouldFile ? 'Usually, yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || defaultReason)}</div>
       </div>`;
   } else { recSection.style.display = 'none'; }
 }
@@ -939,6 +1043,7 @@ document.getElementById('dedInput').addEventListener('input', function() {
   if (dedUsed < 0 || isNaN(dedUsed)) return;
 
   const remaining = Math.max(0, annualDed - dedUsed);
+  document.getElementById('dedRemaining').textContent = `Deductible remaining: $${fmt(remaining)}`;
   const appliedToDed = Math.min(remaining, totalCovered);
   const eligibleForReimb = Math.max(0, totalCovered - remaining);
 
