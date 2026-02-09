@@ -821,6 +821,7 @@ function setVetBill(file) {
   vetBillFile = file;
   vetBillZone.classList.add('has-file');
   vetBillZone.querySelector('.drop-default').style.display = 'none';
+  vetBillInput.style.display = 'none';
   const nameEl = vetBillZone.querySelector('.file-name');
   nameEl.style.display = 'flex';
   nameEl.innerHTML = `✅ ${trunc(file.name)} <button class="file-remove" onclick="removeVetBill(event)">&times;</button>`;
@@ -831,6 +832,7 @@ function removeVetBill(e) {
   vetBillFile = null; vetBillInput.value = '';
   vetBillZone.classList.remove('has-file');
   vetBillZone.querySelector('.drop-default').style.display = '';
+  vetBillInput.style.display = '';
   vetBillZone.querySelector('.file-name').style.display = 'none';
 }
 
@@ -866,10 +868,12 @@ function renderInsuranceChips() {
     chipsContainer.innerHTML = '';
     insuranceZone.classList.remove('has-file');
     insuranceZone.querySelector('.drop-default').style.display = '';
+    insuranceInput.style.display = '';
     return;
   }
   insuranceZone.classList.add('has-file');
   insuranceZone.querySelector('.drop-default').style.display = 'none';
+  insuranceInput.style.display = 'none';
   let html = insuranceFiles.map((f, i) =>
     `<div class="file-chip">✅ ${trunc(f.name)} <button onclick="removeInsuranceFile(${i})">&times;</button></div>`
   ).join('');
