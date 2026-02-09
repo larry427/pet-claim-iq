@@ -511,6 +511,7 @@
         <div class="trust-item"><span class="ti-icon green">🤖</span> AI-powered analysis</div>
         <div class="trust-item"><span class="ti-icon blue">ℹ️</span> Your insurer makes the final decision</div>
       </div>
+      <a href="#sample-analysis" style="display:inline-block; margin-top:20px; font-size:14px; color:var(--g500); text-decoration:none; font-weight:500;" onclick="document.getElementById('sample-analysis').scrollIntoView({behavior:'smooth'}); return false;">See a Sample Analysis ↓</a>
     </div>
 
     <div class="steps">
@@ -521,6 +522,131 @@
       <div class="step"><span class="step-num">3</span> See Results</div>
     </div>
 
+    <!-- ========== SAMPLE ANALYSIS ========== -->
+    <div id="sample-analysis" style="margin-bottom:32px;">
+      <div class="section-title" style="text-align:center; margin-bottom:16px; font-size:12px;">📋 SAMPLE ANALYSIS</div>
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-top-row">
+            <div class="result-pet">
+              <h3>🐾 Angel's Vet Visit</h3>
+              <div class="pet-sub">Tortoiseshell · Feline</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+              <div class="result-insurer">Healthy Paws</div>
+              <div><div class="confidence-badge high">Confidence: High</div></div>
+            </div>
+          </div>
+          <div class="result-meta">
+            <span>🏥 Newport Animal Hospital</span>
+            <span>📅 <strong>8/23/2024</strong></span>
+            <span>💰 Total: <strong>$264.06</strong></span>
+          </div>
+        </div>
+
+        <div class="line-items">
+          <div class="section-title">Line-by-Line Coverage Analysis</div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status excluded">✗</div>
+              <div>
+                <div class="li-name">Exam</div>
+                <div class="li-reason exc">Section II.1.a: Veterinary examination fees are not covered.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "We do not cover: a. Veterinary examination fees."</div>
+              </div>
+            </div>
+            <div class="li-amount struck">$78.00</div>
+          </div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status excluded">✗</div>
+              <div>
+                <div class="li-name">FVRCP Vaccine - 3 Year</div>
+                <div class="li-reason exc">Section II.3.b: Preventive healthcare including vaccinations are not covered.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "We do not cover: b. Preventive healthcare including vaccinations."</div>
+              </div>
+            </div>
+            <div class="li-amount struck">$34.32</div>
+          </div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status excluded">✗</div>
+              <div>
+                <div class="li-name">Rabies Vaccine - 3 Year</div>
+                <div class="li-reason exc">Section II.3.b: Preventive healthcare including vaccinations are not covered.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "We do not cover: b. Preventive healthcare including vaccinations."</div>
+              </div>
+            </div>
+            <div class="li-amount struck">$34.32</div>
+          </div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status covered">✓</div>
+              <div>
+                <div class="li-name">Fluorescein Stain</div>
+                <div class="li-reason">Section V.31.b: Laboratory and diagnostic tests.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "Veterinary Treatment means: b. Laboratory and diagnostic tests"</div>
+              </div>
+            </div>
+            <div class="li-amount">$45.76</div>
+          </div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status covered">✓</div>
+              <div>
+                <div class="li-name">Neo/Poly/Dex Drops 5ml</div>
+                <div class="li-reason">Section V.31.c: Medication.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "Veterinary Treatment means: c. Medication"</div>
+              </div>
+            </div>
+            <div class="li-amount">$39.55</div>
+          </div>
+
+          <div class="line-item">
+            <div class="li-left">
+              <div class="li-status excluded">✗</div>
+              <div>
+                <div class="li-name">Nail Trim</div>
+                <div class="li-reason exc">Section II.3.b: Nail trim is considered preventive care.</div>
+                <div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "We do not cover: b. Preventive healthcare including nail trim."</div>
+              </div>
+            </div>
+            <div class="li-amount struck">$25.12</div>
+          </div>
+
+          <div class="line-item" style="border-bottom:none;">
+            <div class="li-left">
+              <div class="li-status excluded">✗</div>
+              <div>
+                <div class="li-name">Medical Waste Disposal</div>
+                <div class="li-reason exc">Not specified in policy as covered.</div>
+              </div>
+            </div>
+            <div class="li-amount struck">$6.99</div>
+          </div>
+        </div>
+
+        <div class="math-section">
+          <div class="section-title">Reimbursement Estimate</div>
+          <div class="math-box">
+            <div class="math-row"><span class="math-label">Total bill</span><span class="math-val">$264.06</span></div>
+            <div class="math-row"><span class="math-label">Excluded charges</span><span class="math-val">− $178.75</span></div>
+            <div class="math-row math-divider"><span class="math-label">Covered amount</span><span class="math-val">$85.31</span></div>
+            <div class="math-row"><span class="math-label">× 80% reimbursement rate</span><span class="math-val">$68.25</span></div>
+            <div class="math-row math-result"><span class="math-label">Estimated reimbursement (if deductible met)</span><span class="math-val">$68.25</span></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="start-over-btn" style="margin-top:16px;" onclick="document.getElementById('dropVetBill').scrollIntoView({behavior:'smooth'});">Try It With Your Own Vet Bill ↑</button>
+    </div>
+
+    <div id="upload-section-anchor"></div>
     <div class="upload-section">
       <div class="upload-inner">
 
