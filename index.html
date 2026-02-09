@@ -1098,9 +1098,10 @@ function renderResults(data) {
   if (isFull && policyInfo?.annualDeductible) {
     dedSection.style.display = '';
     document.getElementById('dedAnnual').textContent = `Annual deductible: $${fmt(policyInfo.annualDeductible)}`;
-    document.getElementById('dedInput').value = '';
-    document.getElementById('dedResults').classList.remove('visible');
-    document.getElementById('dedResults').innerHTML = '';
+    const dedInput = document.getElementById('dedInput');
+    dedInput.value = '0';
+    // Trigger initial calculation with correct mathOrder
+    dedInput.dispatchEvent(new Event('input'));
   } else { dedSection.style.display = 'none'; }
 
   // Deadline
