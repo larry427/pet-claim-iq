@@ -659,6 +659,7 @@
 
 <script>
 const API_URL = 'https://pet-claim-helper.onrender.com/api/analyze-claim';
+const isAdminMode = new URLSearchParams(window.location.search).get('admin') === 'true';
 let vetBillFile = null;
 let lastAnalysis = null;
 
@@ -895,6 +896,7 @@ function renderResults(data) {
             <div class="li-name">${esc(item.description)}</div>
             ${reasonText && !isUnknown ? `<div class="li-reason ${reasonClass}">${esc(reasonText)}</div>` : ''}
             ${sourceText && !isUnknown ? `<div class="li-reason" style="color:var(--g500); font-size:11px;">Source: ${esc(sourceText)}</div>` : ''}
+            ${isAdminMode && item.sourceQuote ? `<div style="margin-top:4px; padding:4px 8px; border-left:3px solid #6b7280; background:#f3f4f6; font-size:12px; font-style:italic; color:#4b5563;">📋 "${esc(item.sourceQuote)}"</div>` : ''}
           </div>
         </div>
         <div class="li-amount ${amtClass}">$${fmt(item.amount)}</div>
