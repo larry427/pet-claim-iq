@@ -1093,17 +1093,6 @@ function renderResults(data) {
       <div class="math-note">This assumes your annual deductible is already fully met. Enter your deductible progress below for a more precise estimate.</div>`;
   } else { mathSection.style.display = 'none'; }
 
-  // Deductible calculator
-  const dedSection = document.getElementById('rDedSection');
-  if (isFull && policyInfo?.annualDeductible) {
-    dedSection.style.display = '';
-    document.getElementById('dedAnnual').textContent = `Annual deductible: $${fmt(policyInfo.annualDeductible)}`;
-    const dedInput = document.getElementById('dedInput');
-    dedInput.value = '0';
-    // Trigger initial calculation with correct mathOrder
-    dedInput.dispatchEvent(new Event('input'));
-  } else { dedSection.style.display = 'none'; }
-
   // Deadline
   const dlSection = document.getElementById('rDeadline');
   if (isFull && policyInfo?.filingDeadline) {
@@ -1113,21 +1102,29 @@ function renderResults(data) {
       <div class="deadline-text">File by <strong>${esc(policyInfo.filingDeadline)}</strong></div></div></div>`;
   } else { dlSection.style.display = 'none'; }
 
-  // Recommendation
+  // Recommendation - render BEFORE deductible calculator so updateShouldFileRecommendation() can update it
   const recSection = document.getElementById('rRecSection');
   if (isFull && analysis) {
     recSection.style.display = '';
-    const shouldFile = analysis.shouldFile !== false;
-    const defaultReason = shouldFile
-      ? 'Filing this claim may apply the covered amount toward your annual deductible, bringing you closer to the point where reimbursement starts. If your plan counts these charges toward your deductible, filing is often still worth it even when reimbursement is low.'
-      : 'Consider whether the covered amount justifies filing. Review your policy terms before deciding.';
+    // Initial render with placeholder - will be updated by calculator
     document.getElementById('rRec').innerHTML = `
-      <div class="rec-box ${shouldFile ? '' : 'no-file'}" id="recBox">
-        <div class="rec-header"><span id="recIcon">${shouldFile ? '✅' : '⚠️'}</span>
+      <div class="rec-box" id="recBox">
+        <div class="rec-header"><span id="recIcon">✅</span>
         <h4>Should You File This Claim?</h4></div>
-        <div class="rec-text" id="recText"><strong>${shouldFile ? 'Usually, yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || defaultReason)}</div>
+        <div class="rec-text" id="recText"><strong>Calculating...</strong></div>
       </div>`;
   } else { recSection.style.display = 'none'; }
+
+  // Deductible calculator - MUST run after recommendation section is rendered
+  const dedSection = document.getElementById('rDedSection');
+  if (isFull && policyInfo?.annualDeductible) {
+    dedSection.style.display = '';
+    document.getElementById('dedAnnual').textContent = `Annual deductible: $${fmt(policyInfo.annualDeductible)}`;
+    const dedInput = document.getElementById('dedInput');
+    dedInput.value = '0';
+    // Trigger initial calculation - this will update the shouldFile recommendation
+    dedInput.dispatchEvent(new Event('input'));
+  } else { dedSection.style.display = 'none'; }
 }
 
 // === UPDATE SHOULD FILE RECOMMENDATION ===
