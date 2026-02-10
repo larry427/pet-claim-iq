@@ -1122,12 +1122,42 @@ function renderResults(data) {
       ? 'Filing this claim may apply the covered amount toward your annual deductible, bringing you closer to the point where reimbursement starts. If your plan counts these charges toward your deductible, filing is often still worth it even when reimbursement is low.'
       : 'Consider whether the covered amount justifies filing. Review your policy terms before deciding.';
     document.getElementById('rRec').innerHTML = `
-      <div class="rec-box ${shouldFile ? '' : 'no-file'}">
-        <div class="rec-header"><span>${shouldFile ? '✅' : '⚠️'}</span>
+      <div class="rec-box ${shouldFile ? '' : 'no-file'}" id="recBox">
+        <div class="rec-header"><span id="recIcon">${shouldFile ? '✅' : '⚠️'}</span>
         <h4>Should You File This Claim?</h4></div>
-        <div class="rec-text"><strong>${shouldFile ? 'Usually, yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || defaultReason)}</div>
+        <div class="rec-text" id="recText"><strong>${shouldFile ? 'Usually, yes — file it.' : 'Consider your options.'}</strong> ${esc(analysis.shouldFileReason || defaultReason)}</div>
       </div>`;
   } else { recSection.style.display = 'none'; }
+}
+
+// === UPDATE SHOULD FILE RECOMMENDATION ===
+function updateShouldFileRecommendation(totalCovered, remainingDeductible, estimatedReimb, annualDeductible) {
+  const recBox = document.getElementById('recBox');
+  const recIcon = document.getElementById('recIcon');
+  const recText = document.getElementById('recText');
+  if (!recBox || !recText) return;
+
+  if (totalCovered === 0) {
+    // All items excluded, $0 covered
+    recBox.classList.add('no-file');
+    recIcon.textContent = '⚠️';
+    recText.innerHTML = `<strong>Consider your options.</strong> This bill consists entirely of excluded charges, so there's nothing eligible to file.`;
+  } else if (totalCovered >= remainingDeductible && estimatedReimb > 0) {
+    // Covered amount meets/exceeds deductible AND reimbursement > 0
+    recBox.classList.remove('no-file');
+    recIcon.textContent = '✅';
+    recText.innerHTML = `<strong>Yes — file it.</strong> Filing this claim meets your $${fmt(annualDeductible)} annual deductible and you'll receive an estimated $${fmt(estimatedReimb)} reimbursement.`;
+  } else if (totalCovered >= remainingDeductible && estimatedReimb === 0) {
+    // Covered amount meets deductible but $0 reimbursement (coinsurance-first edge case)
+    recBox.classList.remove('no-file');
+    recIcon.textContent = '✅';
+    recText.innerHTML = `<strong>Yes — file it.</strong> Filing this claim meets your annual deductible. Future covered charges will be reimbursed.`;
+  } else {
+    // Covered amount is less than remaining deductible
+    recBox.classList.remove('no-file');
+    recIcon.textContent = '✅';
+    recText.innerHTML = `<strong>Yes — file it.</strong> Filing this claim applies $${fmt(totalCovered)} toward your $${fmt(annualDeductible)} annual deductible, bringing you closer to reimbursement. Never skip a claim.`;
+  }
 }
 
 // === DEDUCTIBLE CALCULATOR ===
@@ -1160,11 +1190,26 @@ document.getElementById('dedInput').addEventListener('input', function() {
 
   const resultsEl = document.getElementById('dedResults');
   resultsEl.classList.add('visible');
+
+  // Build intermediate steps based on math order
+  const ratePercent = policyInfo?.reimbursementRate || 80;
+  const afterRate = totalCovered * rate;
+  let stepsHtml;
+  if (calcMethod === 'coinsurance-first') {
+    stepsHtml = `
+      <div class="math-row"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(totalCovered)}</span></div>
+      <div class="math-row"><span class="math-label">After ${ratePercent}% reimbursement rate</span><span class="math-val">$${fmt(afterRate)}</span></div>
+      <div class="math-row"><span class="math-label">Minus remaining deductible</span><span class="math-val">− $${fmt(remaining)}</span></div>`;
+  } else {
+    stepsHtml = `
+      <div class="math-row"><span class="math-label">Remaining deductible</span><span class="math-val">$${fmt(remaining)}</span></div>
+      <div class="math-row"><span class="math-label">Applied to deductible from this visit</span><span class="math-val">$${fmt(appliedToDed)}</span></div>
+      <div class="math-row"><span class="math-label">Eligible for reimbursement</span><span class="math-val">$${fmt(eligibleForReimb)}</span></div>`;
+  }
+
   resultsEl.innerHTML = `
     <div class="section-title">Your Estimated Reimbursement</div>
-    <div class="math-row"><span class="math-label">Remaining deductible</span><span class="math-val">$${fmt(remaining)}</span></div>
-    <div class="math-row"><span class="math-label">Applied to deductible from this visit</span><span class="math-val">$${fmt(appliedToDed)}</span></div>
-    <div class="math-row"><span class="math-label">Eligible for reimbursement</span><span class="math-val">$${fmt(eligibleForReimb)}</span></div>
+    ${stepsHtml}
     <div class="math-row math-result"><span class="math-label">Estimated reimbursement check</span>
       <span class="math-val" style="color: ${estimatedReimb > 0 ? 'var(--green)' : 'var(--orange)'}">$${fmt(estimatedReimb)}</span></div>
     ${estimatedReimb === 0 && appliedToDed > 0 ? `<div class="math-note" style="color: var(--green-dark); font-style: normal; font-weight: 500;">
@@ -1172,8 +1217,11 @@ document.getElementById('dedInput').addEventListener('input', function() {
     <div class="ded-progress-bar"><div class="ded-progress-fill" style="width: ${progressPct}%"></div></div>
     <div class="ded-progress-label"><span>$${fmt(newProgress)} used</span><span>$${fmt(annualDed)} deductible</span></div>
     ${progressPct >= 100 ? `<div class="math-note" style="color: var(--green-dark); font-style: normal; font-weight: 600;">
-      🎉 Your deductible is fully met! Every future covered charge gets reimbursed at ${policyInfo?.reimbursementRate || 80}%.</div>`
+      🎉 Your deductible is fully met! Every future covered charge gets reimbursed at ${ratePercent}%.</div>`
     : `<div class="math-note">$${fmt(Math.max(0, annualDed - newProgress))} more until you start receiving reimbursement checks.</div>`}`;
+
+  // Update Should You File recommendation based on calculator results
+  updateShouldFileRecommendation(totalCovered, remaining, estimatedReimb, annualDed);
 });
 
 function fmt(n) { return Number(n || 0).toFixed(2); }
