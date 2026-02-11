@@ -935,14 +935,26 @@ function showError(msg) {
 }
 
 function resetAll() {
+  // Reset file tracking variables
   vetBillFile = null; insuranceFiles = []; lastAnalysis = null;
-  vetBillInput.value = ''; insuranceInput.value = '';
+
+  // Reset vet bill input and UI
+  vetBillInput.value = '';
+  vetBillInput.style.display = '';  // Re-show the hidden file input
   vetBillZone.classList.remove('has-file');
+  vetBillZone.classList.remove('dragover');
   vetBillZone.querySelector('.drop-default').style.display = '';
   vetBillZone.querySelector('.file-name').style.display = 'none';
-  chipsContainer.innerHTML = '';
+
+  // Reset insurance input and UI
+  insuranceInput.value = '';
+  insuranceInput.style.display = '';  // Re-show the hidden file input
   insuranceZone.classList.remove('has-file');
+  insuranceZone.classList.remove('dragover');
   insuranceZone.querySelector('.drop-default').style.display = '';
+  chipsContainer.innerHTML = '';
+
+  // Reset view states
   document.getElementById('uploadView').style.display = '';
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('errorView').classList.remove('visible');
