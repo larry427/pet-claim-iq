@@ -1177,20 +1177,30 @@ document.getElementById('dedInput').addEventListener('input', function() {
   const annualDed = policyInfo?.annualDeductible || 0;
   const totalCovered = analysis?.totalCovered || 0;
   const rate = (policyInfo?.reimbursementRate || 80) / 100;
-  const calcMethod = policyInfo?.mathOrder || 'deductible-first';
+  const ratePercent = policyInfo?.reimbursementRate || 80;
+  // Default to reimbursement-first — matches server-side default (modern standard: apply rate first, then subtract deductible)
+  const calcMethod = policyInfo?.mathOrder || 'reimbursement-first';
 
   if (dedUsed < 0 || isNaN(dedUsed)) return;
 
   const remaining = Math.max(0, annualDed - dedUsed);
   document.getElementById('dedRemaining').textContent = `Deductible remaining: $${fmt(remaining)}`;
-  const appliedToDed = Math.min(remaining, totalCovered);
-  const eligibleForReimb = Math.max(0, totalCovered - remaining);
 
-  let estimatedReimb;
-  if (calcMethod === 'coinsurance-first') {
-    estimatedReimb = Math.max(0, (totalCovered * rate) - remaining);
-  } else {
+  // reimbursableAmount is always needed for display
+  const reimbursableAmount = totalCovered * rate;
+
+  let appliedToDed, eligibleForReimb, estimatedReimb;
+  if (calcMethod === 'deductible-first') {
+    // (covered − deductible) × rate
+    appliedToDed = Math.min(remaining, totalCovered);
+    eligibleForReimb = Math.max(0, totalCovered - remaining);
     estimatedReimb = eligibleForReimb * rate;
+  } else {
+    // reimbursement-first: (covered × rate) − deductible  [default]
+    // Deductible is applied to the reimbursable amount, not the raw covered amount
+    appliedToDed = Math.min(reimbursableAmount, remaining);
+    eligibleForReimb = Math.max(0, reimbursableAmount - remaining);
+    estimatedReimb = eligibleForReimb; // already the final reimbursement
   }
   estimatedReimb = Math.round(estimatedReimb * 100) / 100;
 
@@ -1201,18 +1211,18 @@ document.getElementById('dedInput').addEventListener('input', function() {
   resultsEl.classList.add('visible');
 
   // Build intermediate steps based on math order
-  const ratePercent = policyInfo?.reimbursementRate || 80;
-  const afterRate = totalCovered * rate;
   let stepsHtml;
-  if (calcMethod === 'coinsurance-first') {
-    stepsHtml = `
-      <div class="math-row"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(totalCovered)}</span></div>
-      <div class="math-row"><span class="math-label">After ${ratePercent}% reimbursement rate</span><span class="math-val">$${fmt(afterRate)}</span></div>
-      <div class="math-row"><span class="math-label">Minus remaining deductible</span><span class="math-val">− $${fmt(remaining)}</span></div>`;
-  } else {
+  if (calcMethod === 'deductible-first') {
     stepsHtml = `
       <div class="math-row"><span class="math-label">Remaining deductible</span><span class="math-val">$${fmt(remaining)}</span></div>
       <div class="math-row"><span class="math-label">Applied to deductible from this visit</span><span class="math-val">$${fmt(appliedToDed)}</span></div>
+      <div class="math-row"><span class="math-label">Eligible for reimbursement</span><span class="math-val">$${fmt(eligibleForReimb)}</span></div>`;
+  } else {
+    // reimbursement-first: show rate applied first, then deductible subtracted from reimbursable amount
+    stepsHtml = `
+      <div class="math-row"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(totalCovered)}</span></div>
+      <div class="math-row"><span class="math-label">After ${ratePercent}% reimbursement rate</span><span class="math-val">$${fmt(reimbursableAmount)}</span></div>
+      <div class="math-row"><span class="math-label">Applied to deductible from this visit</span><span class="math-val">−$${fmt(appliedToDed)}</span></div>
       <div class="math-row"><span class="math-label">Eligible for reimbursement</span><span class="math-val">$${fmt(eligibleForReimb)}</span></div>`;
   }
 
