@@ -172,17 +172,69 @@
   .analyze-btn:active:not(:disabled) { transform: translateY(0); }
   .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
-  /* Loading */
-  .loading-overlay { display: none; text-align: center; padding: 60px 20px; }
-  .loading-overlay.visible { display: block; }
-  .spinner {
-    width: 48px; height: 48px; border: 4px solid var(--g200);
-    border-top-color: var(--green); border-radius: 50%;
-    animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+  /* === LOADING OVERLAY (Slideshow) === */
+  .loading-overlay { display: none; }
+  .loading-overlay.visible { display: block; padding: 40px 20px 60px; }
+
+  .slide-status-bar {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 28px;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-overlay h3 { font-family: 'Fraunces', serif; font-size: 20px; color: var(--g800); margin-bottom: 8px; }
-  .loading-overlay p { font-size: 14px; color: var(--g400); }
+  .slide-status-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--green);
+    animation: pulse-dot 1.5s ease-in-out infinite; flex-shrink: 0;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.8); }
+  }
+  .slide-status-text { font-size: 15px; font-weight: 600; color: var(--g600); }
+  .slide-ellipsis::after {
+    content: ''; animation: ellipsis-cycle 2.4s steps(4, end) infinite;
+  }
+  @keyframes ellipsis-cycle {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+    100% { content: ''; }
+  }
+
+  .slide-card {
+    background: white; border-radius: 20px;
+    box-shadow: var(--shadow-xl); border: 1px solid rgba(0,0,0,0.06);
+    overflow: hidden; padding: 40px 32px; text-align: center;
+    min-height: 260px; position: relative;
+    transition: opacity 0.4s ease;
+  }
+  .slide-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--green), var(--green-light), var(--orange));
+  }
+  .slide-icon { font-size: 44px; margin-bottom: 14px; line-height: 1; }
+  .slide-type {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; display: inline-block;
+    padding: 3px 10px; border-radius: 100px; margin-bottom: 12px;
+  }
+  .slide-type.mechanics {
+    background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border);
+  }
+  .slide-type.philosophy {
+    background: var(--green-bg); color: var(--green-dark); border: 1px solid var(--green-border);
+  }
+  .slide-title {
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700;
+    color: var(--g900); margin-bottom: 14px; line-height: 1.3;
+  }
+  .slide-body { font-size: 15px; color: var(--g600); line-height: 1.65; max-width: 400px; margin: 0 auto; }
+
+  .slide-dots { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+  .slide-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--g300); transition: all 0.3s ease; cursor: default;
+  }
+  .slide-dot.active { background: var(--green); transform: scale(1.25); }
 
   /* Error */
   .error-box { display: none; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: 12px; padding: 20px; text-align: center; margin: 20px auto; max-width: 680px; }
@@ -486,10 +538,14 @@
     .start-over-btn { padding: 16px; font-size: 16px; border-radius: 14px; }
     .privacy { font-size: 13px; padding: 28px 20px 36px; }
 
-    /* Loading & Error */
-    .spinner { width: 56px; height: 56px; }
-    .loading-overlay h3 { font-size: 22px; }
-    .loading-overlay p { font-size: 15px; }
+    /* Loading */
+    .loading-overlay.visible { padding: 32px 16px 48px; }
+    .slide-card { padding: 32px 24px; min-height: 240px; }
+    .slide-icon { font-size: 40px; }
+    .slide-title { font-size: 20px; }
+    .slide-body { font-size: 15px; }
+
+    /* Error */
     .error-box { padding: 24px; border-radius: 16px; }
     .error-box p { font-size: 15px; }
     .error-box .err-icon { font-size: 36px; }
@@ -694,9 +750,12 @@
 <!-- ========== LOADING VIEW ========== -->
 <div id="loadingView" class="loading-overlay">
   <div class="container">
-    <div class="spinner"></div>
-    <h3>Analyzing your documents...</h3>
-    <p>Reading your vet bill, checking policy exclusions, running the math.<br>This usually takes 30–60 seconds.</p>
+    <div class="slide-status-bar">
+      <span class="slide-status-dot"></span>
+      <span class="slide-status-text">Analyzing your documents<span class="slide-ellipsis"></span></span>
+    </div>
+    <div id="slideCard" class="slide-card"></div>
+    <div class="slide-dots" id="slideDots"></div>
   </div>
 </div>
 
@@ -885,6 +944,122 @@ function renderInsuranceChips() {
 
 function trunc(name) { return name.length > 25 ? name.substring(0, 22) + '...' : name; }
 
+// === LOADING SLIDESHOW ===
+let slideshowInterval = null;
+let slideshowSlides = [];
+let slideshowIdx = 0;
+
+function buildSlides(policyInfo) {
+  const rate = policyInfo?.reimbursementRate;
+  const ded = policyInfo?.annualDeductible;
+
+  // Personalize card 1 if we have the real rate from a prior analysis
+  const card1Body = rate
+    ? `Your insurer pays <strong>${rate}%</strong> of covered charges. On a $1,000 covered bill, that's <strong>$${Math.round(1000 * rate / 100)}</strong> back in your pocket.`
+    : `Your insurer pays a percentage of covered charges — typically 70%, 80%, or 90%. On a $1,000 covered bill at 80%, that's $800 back in your pocket.`;
+
+  // Personalize card 3 if we have the real deductible from a prior analysis
+  const card3Body = ded
+    ? `Your annual deductible is <strong>$${ded}</strong>. Once it's met, every future covered claim gets reimbursed for the rest of the year.`
+    : `Your annual deductible is the amount you pay first before reimbursement kicks in. Once it's met, every future covered claim gets reimbursed for the rest of the year.`;
+
+  return [
+    {
+      icon: '📊', type: 'MECHANICS', typeClass: 'mechanics',
+      title: 'How Your Reimbursement Works',
+      body: card1Body
+    },
+    {
+      icon: '🛡️', type: 'PHILOSOPHY', typeClass: 'philosophy',
+      title: 'Insurance Is Your Financial Bodyguard',
+      body: `Pet insurance isn't an investment — it's protection. One emergency surgery can cost $5,000 or more. Insurance means you never have to choose between your pet and your finances.`
+    },
+    {
+      icon: '💰', type: 'MECHANICS', typeClass: 'mechanics',
+      title: 'Understanding Your Deductible',
+      body: card3Body
+    },
+    {
+      icon: '❤️', type: 'PHILOSOPHY', typeClass: 'philosophy',
+      title: 'Every Claim Matters',
+      body: `Even if you don't get a check this visit, filing moves you closer to meeting your deductible. Pet owners who file every claim get the most from their policy.`
+    },
+    {
+      icon: '📋', type: 'MECHANICS', typeClass: 'mechanics',
+      title: 'What Gets Excluded?',
+      body: `Most policies exclude routine wellness care — vaccines, flea prevention, annual exams. But accidents and illnesses? That's exactly what insurance is designed for.`
+    },
+    {
+      icon: '⏰', type: 'PHILOSOPHY', typeClass: 'philosophy',
+      title: "Don't Miss Your Filing Deadline",
+      body: `Most insurers require claims within 90–180 days of treatment. Missing the deadline means losing money you're entitled to. That's exactly why Pet Claim Helper exists.`
+    },
+    {
+      icon: '🧮', type: 'MECHANICS', typeClass: 'mechanics',
+      title: 'The Math Order Matters',
+      body: `Some insurers apply your reimbursement rate first, then subtract your deductible. Others do it the opposite way. The order can mean hundreds of dollars difference.`
+    },
+    {
+      icon: '🐾', type: 'PHILOSOPHY', typeClass: 'philosophy',
+      title: 'Only 5% of Pet Owners Have Insurance',
+      body: `But 100% of pet owners pay vet bills. The pet owners who are protected aren't luckier — they're just prepared. You're doing the right thing by using your coverage.`
+    }
+  ];
+}
+
+function renderSlide(slides, idx, firstRender) {
+  const card = document.getElementById('slideCard');
+  if (!card) return;
+  const slide = slides[idx];
+  const paint = () => {
+    card.innerHTML = `
+      <div class="slide-icon">${slide.icon}</div>
+      <div class="slide-type ${slide.typeClass}">${slide.type}</div>
+      <div class="slide-title">${slide.title}</div>
+      <div class="slide-body">${slide.body}</div>
+    `;
+    requestAnimationFrame(() => { card.style.opacity = '1'; });
+  };
+  if (firstRender) {
+    card.style.opacity = '0';
+    paint();
+  } else {
+    card.style.opacity = '0';
+    setTimeout(paint, 420);
+  }
+}
+
+function renderDots(count, activeIdx) {
+  const dotsEl = document.getElementById('slideDots');
+  if (!dotsEl) return;
+  dotsEl.innerHTML = Array.from({ length: count }, (_, i) =>
+    `<div class="slide-dot${i === activeIdx ? ' active' : ''}"></div>`
+  ).join('');
+}
+
+function updateDots(activeIdx) {
+  document.querySelectorAll('.slide-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === activeIdx);
+  });
+}
+
+function startSlideshow(policyInfo) {
+  stopSlideshow();
+  slideshowSlides = buildSlides(policyInfo);
+  slideshowIdx = 0;
+  renderDots(slideshowSlides.length, 0);
+  renderSlide(slideshowSlides, 0, true);
+  slideshowInterval = setInterval(() => {
+    slideshowIdx = (slideshowIdx + 1) % slideshowSlides.length;
+    renderSlide(slideshowSlides, slideshowIdx, false);
+    updateDots(slideshowIdx);
+  }, 7000);
+}
+
+function stopSlideshow() {
+  if (slideshowInterval) { clearInterval(slideshowInterval); slideshowInterval = null; }
+}
+
 // === ANALYZE ===
 async function analyzeDocuments() {
   if (!vetBillFile) { alert('Please upload your vet bill.'); return; }
@@ -895,6 +1070,7 @@ async function analyzeDocuments() {
   document.getElementById('errorView').style.display = 'none';
   document.getElementById('resultsView').classList.remove('visible');
   window.scrollTo(0, 0);
+  startSlideshow(lastAnalysis?.policyInfo);
 
   const formData = new FormData();
   formData.append('vetBill', vetBillFile);
@@ -927,6 +1103,7 @@ async function analyzeDocuments() {
 }
 
 function showError(msg) {
+  stopSlideshow();
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('errorView').classList.add('visible');
   document.getElementById('errorView').style.display = 'block';
@@ -935,6 +1112,7 @@ function showError(msg) {
 }
 
 function resetAll() {
+  stopSlideshow();
   // Reset file tracking variables
   vetBillFile = null; insuranceFiles = []; lastAnalysis = null;
 
@@ -971,6 +1149,7 @@ function goBackToUpload() {
 
 // === RENDER RESULTS ===
 function renderResults(data) {
+  stopSlideshow();
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('resultsView').classList.add('visible');
   window.scrollTo(0, 0);
