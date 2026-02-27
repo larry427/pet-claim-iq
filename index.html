@@ -1321,13 +1321,16 @@ function renderResults(data) {
   if (isFull && analysis) {
     mathSection.style.display = '';
     const rate = policyInfo?.reimbursementRate || 80;
-    const maxReimb = analysis.maxReimbursement || analysis.reimbursementBeforeDeductible || 0;
+    // "If deductible met" = covered × rate only — no deductible subtracted.
+    // analysis.maxReimbursement already has the deductible removed (server math),
+    // so we compute this independently from the raw covered amount.
+    const ifDeductibleMet = Math.round(analysis.totalCovered * (rate / 100) * 100) / 100;
     document.getElementById('rMath').innerHTML = `
       <div class="math-row"><span class="math-label">Total bill</span><span class="math-val">$${fmt(analysis.totalBill)}</span></div>
       <div class="math-row"><span class="math-label">Excluded charges</span><span class="math-val">− $${fmt(analysis.totalExcluded)}</span></div>
       <div class="math-row math-divider"><span class="math-label">Covered amount</span><span class="math-val">$${fmt(analysis.totalCovered)}</span></div>
-      <div class="math-row"><span class="math-label">× ${rate}% reimbursement rate</span><span class="math-val">$${fmt(maxReimb)}</span></div>
-      <div class="math-row math-result"><span class="math-label">Estimated reimbursement (if deductible met)</span><span class="math-val">$${fmt(maxReimb)}</span></div>
+      <div class="math-row"><span class="math-label">× ${rate}% reimbursement rate</span><span class="math-val">$${fmt(ifDeductibleMet)}</span></div>
+      <div class="math-row math-result"><span class="math-label">Estimated reimbursement (if deductible met)</span><span class="math-val">$${fmt(ifDeductibleMet)}</span></div>
       <div class="math-note">This assumes your annual deductible is already fully met. Enter your deductible progress below for a more precise estimate.</div>`;
   } else { mathSection.style.display = 'none'; }
 
