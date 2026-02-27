@@ -1434,9 +1434,9 @@ document.getElementById('dedInput').addEventListener('input', function() {
     estimatedReimb = eligibleForReimb * rate;
   } else {
     // reimbursement-first: (covered × rate) − deductible  [default]
-    // Deductible is applied to the reimbursable amount, not the raw covered amount
-    appliedToDed = Math.min(reimbursableAmount, remaining);
-    eligibleForReimb = Math.max(0, reimbursableAmount - remaining);
+    // Deductible progress tracks against the raw covered amount, then rate is applied to remainder
+    appliedToDed = Math.min(totalCovered, remaining);
+    eligibleForReimb = Math.max(0, reimbursableAmount - appliedToDed);
     estimatedReimb = eligibleForReimb; // already the final reimbursement
   }
   estimatedReimb = Math.round(estimatedReimb * 100) / 100;
