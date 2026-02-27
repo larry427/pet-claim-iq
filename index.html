@@ -240,6 +240,7 @@
     color: var(--g900); margin-bottom: 14px; line-height: 1.3;
   }
   .slide-body { font-size: 15px; color: var(--g600); line-height: 1.65; max-width: 400px; margin: 0 auto; }
+  .slide-logo { display: block; width: 110px; margin: 16px auto 0; opacity: 0.45; }
 
   .slide-dots { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
   .slide-dot {
@@ -1040,6 +1041,7 @@ function renderSlide(slides, idx, firstRender) {
       <div class="slide-type ${slide.typeClass}">${slide.type}</div>
       <div class="slide-title">${slide.title}</div>
       <div class="slide-body">${slide.body}</div>
+      <img class="slide-logo" src="pch-logo.png" alt="">
     `;
     requestAnimationFrame(() => { card.style.opacity = '1'; });
   };
