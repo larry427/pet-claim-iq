@@ -1322,9 +1322,17 @@ function renderResults(data) {
     mathSection.style.display = '';
     const rate = policyInfo?.reimbursementRate || 80;
     // "If deductible met" = covered × rate only — no deductible subtracted.
-    // analysis.maxReimbursement already has the deductible removed (server math),
-    // so we compute this independently from the raw covered amount.
+    // Match the lower calculator: treat rate as an integer (70 = 70%), divide by 100.
+    // If server returns a decimal (0.70), rate/100 = 0.007 which is wrong —
+    // the console.log below will reveal this if ifDeductibleMet looks tiny.
     const ifDeductibleMet = Math.round(analysis.totalCovered * (rate / 100) * 100) / 100;
+    console.log('[ClaimIQ] Math section debug:', {
+      totalCovered: analysis.totalCovered,
+      reimbursementRate: policyInfo?.reimbursementRate,
+      rateUsed: rate,
+      ifDeductibleMet,
+      serverMaxReimbursement: analysis.maxReimbursement,
+    });
     document.getElementById('rMath').innerHTML = `
       <div class="math-row"><span class="math-label">Total bill</span><span class="math-val">$${fmt(analysis.totalBill)}</span></div>
       <div class="math-row"><span class="math-label">Excluded charges</span><span class="math-val">− $${fmt(analysis.totalExcluded)}</span></div>
