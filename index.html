@@ -171,6 +171,18 @@
   .analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22, 163, 74, 0.4); }
   .analyze-btn:active:not(:disabled) { transform: translateY(0); }
   .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
+  .cross-test-wrap { text-align: center; margin-top: 18px; }
+  .cross-test-label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .cross-test-label input[type="checkbox"] { width: 13px; height: 13px; accent-color: #6b7280; cursor: pointer; flex-shrink: 0; }
+  .cross-test-label span { font-size: 13px; color: var(--g500); }
+  .cross-test-label:hover span { color: var(--g700); }
+  .cross-test-helper { font-size: 11px; color: var(--g400, #9ca3af); line-height: 1.5; margin: 6px auto 0; max-width: 280px; }
+  .eligibility-warn-box { margin: 0 0 20px 0; padding: 16px 18px; background: #fffbeb; border: 2px solid #f59e0b; border-radius: 14px; display: flex; gap: 12px; align-items: flex-start; }
+  .eligibility-warn-box .ew-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
+  .eligibility-warn-box .ew-body h4 { font-size: 14px; font-weight: 700; color: #92400e; margin: 0 0 6px 0; }
+  .eligibility-warn-box .ew-body ul { margin: 0 0 8px 0; padding-left: 16px; }
+  .eligibility-warn-box .ew-body li { font-size: 13px; color: #78350f; line-height: 1.5; margin-bottom: 4px; }
+  .eligibility-warn-box .ew-body p { font-size: 11px; color: #92400e; margin: 0; }
 
   /* === LOADING OVERLAY (Slideshow) === */
   .loading-overlay { display: none; }
@@ -738,6 +750,14 @@
         </div>
 
         <button class="analyze-btn" id="analyzeBtn" onclick="analyzeDocuments()">Estimate My Reimbursement</button>
+
+        <div class="cross-test-wrap">
+          <label class="cross-test-label">
+            <input type="checkbox" id="crossTestCheckbox" onchange="crossTestingMode = this.checked">
+            <span>⚗️ Cross-Testing Mode</span>
+          </label>
+          <p class="cross-test-helper">Bypasses pet name and policy date checks. For testing coverage logic across different pets and policies. Processes faster than the average claims adjudicator.</p>
+        </div>
       </div>
     </div>
 
@@ -775,6 +795,8 @@
       <div class="logo-row">🐾 Pet Claim IQ — Your Results</div>
       <div class="results-disclaimer">ℹ️ Your insurer makes the final reimbursement decision. This analysis is based on general coverage rules and does not account for pre-existing conditions, waiting periods, or claim history.</div>
     </div>
+
+    <div id="rEligibilityWarnings" style="display:none;"></div>
 
     <div class="result-card">
       <div class="result-header">
@@ -847,6 +869,7 @@ const API_URL = 'https://pet-claim-helper.onrender.com/api/analyze-claim';
 const isAdminMode = new URLSearchParams(window.location.search).get('admin') === 'true';
 let vetBillFile = null;
 let lastAnalysis = null;
+let crossTestingMode = false;
 
 // === SAMPLE ANALYSIS TOGGLE ===
 function toggleSample() {
@@ -1075,6 +1098,7 @@ async function analyzeDocuments() {
   const formData = new FormData();
   formData.append('vetBill', vetBillFile);
   insuranceFiles.forEach(f => formData.append('insuranceDocs', f));
+  formData.append('crossTestingMode', crossTestingMode ? 'true' : 'false');
 
   try {
     const controller = new AbortController();
@@ -1153,6 +1177,20 @@ function renderResults(data) {
   document.getElementById('loadingView').classList.remove('visible');
   document.getElementById('resultsView').classList.add('visible');
   window.scrollTo(0, 0);
+
+  // Eligibility warnings (pet name mismatch / waiting period) — populated by server when crossTestingMode=false
+  const ewEl = document.getElementById('rEligibilityWarnings');
+  if (data.eligibilityWarnings?.length) {
+    ewEl.style.display = '';
+    ewEl.innerHTML = `<div class="eligibility-warn-box">
+      <div class="ew-icon">⚠️</div>
+      <div class="ew-body">
+        <h4>Eligibility Warning</h4>
+        <ul>${data.eligibilityWarnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>
+        <p>Enable <strong>Cross-Testing Mode</strong> before submitting to bypass these checks.</p>
+      </div>
+    </div>`;
+  } else { ewEl.style.display = 'none'; ewEl.innerHTML = ''; }
 
   const { completeness, missingInfo, missingDocumentHint, petInfo, billInfo, policyInfo, analysis } = data;
   const isFull = completeness === 'full';
