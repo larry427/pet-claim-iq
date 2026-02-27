@@ -785,7 +785,7 @@
   <div class="container">
     <div class="err-icon">😿</div>
     <p id="errorMsg">Something went wrong analyzing your documents. Please try again.</p>
-    <button onclick="resetAll()">Try Again</button>
+    <button onclick="retryAnalysis()">Try Again</button>
   </div>
 </div>
 
@@ -1104,7 +1104,7 @@ async function analyzeDocuments() {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 90000);
+    const timeout = setTimeout(() => controller.abort(), 180000);
     const response = await fetch(API_URL, { method: 'POST', body: formData, signal: controller.signal });
     clearTimeout(timeout);
 
@@ -1135,6 +1135,13 @@ function showError(msg) {
   document.getElementById('errorView').style.display = 'block';
   document.getElementById('errorMsg').textContent = msg;
   window.scrollTo(0, 0);
+}
+
+function retryAnalysis() {
+  // Re-submit with the same files already in memory — no re-upload needed.
+  document.getElementById('errorView').classList.remove('visible');
+  document.getElementById('errorView').style.display = 'none';
+  analyzeDocuments();
 }
 
 function resetAll() {
