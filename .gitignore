@@ -1,0 +1,12 @@
+# ── Editor / OS noise ──
+.DS_Store
+
+# ── Claude Code / MCP session scratch (tooling state, not project files) ──
+.claude/
+.playwright-mcp/
+
+# ── Loose scratch screenshots (Sham Paws automation artifacts — wrong project,
+#    kept on disk but ignored so they stop showing as a phantom diff) ──
+groomer-*.png
+p2-*.png
+step-*.png
